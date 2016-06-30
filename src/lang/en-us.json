@@ -1,0 +1,38 @@
+{
+    "language": {
+        "name": "English",
+        "variant": "American",
+        "code": "en",
+        "fullCode": "en-US",
+        "isLongCount": false
+    },
+    "base": {
+        "digits": ["zero", "one",    "two",    "three",    "four",     "five",    "six",     "seven",     "eight",    "nine"],
+        "tens":   ["zero", "ten",    "twenty", "thirty",   "forty",    "fifty",   "sixty",   "seventy",   "eighty",   "ninety"],
+        "teens":  ["ten",  "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"],
+        "hundred": "hundred",
+        "thousand": "thousand"
+    },
+    "prefixes": {
+        "unit": {
+            "formal":   ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"],
+            "informal": ["", "un", "do",  "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+        },
+        "tens": {
+            "formal":   ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"],
+            "informal": ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+        },
+        "hundreds": {
+            "formal":   ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"],
+            "informal": ["", "cen", "ducen",  "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+        },
+        "special": {
+            "formal":   ["", "mi", "bi", "tri", "quadri", "quinti", "sexti", "septi", "octi", "noni"],
+            "informal": ["", "mi", "bi", "tri", "quadri", "quinti", "sexti", "septi", "octi", "noni"],
+        }
+    },
+    "suffixes": {
+        "llion": "llion",
+        "lliard": "lliard"
+    }
+}

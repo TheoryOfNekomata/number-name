@@ -1,0 +1,38 @@
+{
+    "language": {
+        "name": "Tagalog",
+        "variant": "Philippines",
+        "code": "en",
+        "fullCode": "tl-PH",
+        "isLongCount": false
+    },
+    "base": {
+        "digits": ["sero", "isa",    "dalawa",    "tatlo",    "apat",     "lima",    "anim",     "pito",     "walo",    "siyam"],
+        "tens":   ["sero", "sampu",    "dalawampu", "tatlumpu",   "apatnapu",    "limampu",   "animnapu",   "pitumpu",   "walumpu",   "siyamnapu"],
+        "teens":  ["sampu",  "labing-isa", "labindalawa", "labintatlo", "labing-apat", "labing-lima", "labing-anim", "labimpito", "labing-walo", "labinsiyam"],
+        "hundred": "daan",
+        "thousand": "libo"
+    },
+    "prefixes": {
+        "unit": {
+            "formal":   ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"],
+            "informal": ["", "un", "do",  "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+        },
+        "tens": {
+            "formal":   ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"],
+            "informal": ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+        },
+        "hundreds": {
+            "formal":   ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"],
+            "informal": ["", "cen", "ducen",  "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+        },
+        "special": {
+            "formal":   ["", "mi", "bi", "tri", "quadri", "quinti", "sexti", "septi", "octi", "noni"],
+            "informal": ["", "mi", "bi", "tri", "quadri", "quinti", "sexti", "septi", "octi", "noni"],
+        }
+    },
+    "suffixes": {
+        "llion": "lyon",
+        "lliard": "lyard"
+    }
+}
