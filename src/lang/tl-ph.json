@@ -1,35 +1,40 @@
 {
     "language": {
-        "name": "Tagalog",
-        "variant": "Philippines",
+        "name": "English",
+        "variant": "American",
         "code": "en",
-        "fullCode": "tl-PH",
-        "isLongCount": false
+        "fullCode": "en-US",
+        "isLongCount": false,
+        "canInfixDashes": true
     },
     "base": {
-        "digits": ["sero", "isa",    "dalawa",    "tatlo",    "apat",     "lima",    "anim",     "pito",     "walo",    "siyam"],
-        "tens":   ["sero", "sampu",    "dalawampu", "tatlumpu",   "apatnapu",    "limampu",   "animnapu",   "pitumpu",   "walumpu",   "siyamnapu"],
-        "teens":  ["sampu",  "labing-isa", "labindalawa", "labintatlo", "labing-apat", "labing-lima", "labing-anim", "labimpito", "labing-walo", "labinsiyam"],
+        "zero": "zero",
+        "units":  [       "isa",    "dalawa",    "tatlo",    "apat",     "lima",    "anim",     "pito",     "walo",    "siyam"],
+        "tens":   [                 "dalawampu", "tatlumpu",   "apatnapu",    "limampu",   "animnapu",   "pitumpu",   "walumpu",   "siyampu"],
+        "teens":  ["sampu", "labing-isa", "labindalawa", "labintatlo", "labing-apat", "labinlima", "labing-anim", "labimpito", "labing-walo", "labinsiyam"],
         "hundred": "daan",
-        "thousand": "libo"
+        "thousand": "libo",
+        "point": "poynt",
+        "negative": "negatib"
     },
     "prefixes": {
-        "unit": {
-            "formal":   ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"],
-            "informal": ["", "un", "do",  "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+        "units": {
+            "formal":   ["un", "duo", "tre", "kwattuor", "kwin", "seks", "septen", "okto", "nobem"],
+            "informal": ["un", "do",  "tre", "kwattuor", "kwin", "seks", "septen", "okto", "nobem"]
         },
         "tens": {
-            "formal":   ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"],
-            "informal": ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+            "formal":   ["des", "bihin", "trihin", "kwadrahin", "kwinkwahin", "seksahin", "septuahin", "oktohin", "nonahin"],
+            "informal": ["des", "bihin", "trihin", "kwadrahin", "kwinkwahin", "seksahin", "septuahin", "oktohin", "nonahin"]
         },
         "hundreds": {
-            "formal":   ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"],
-            "informal": ["", "cen", "ducen",  "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+            "formal":   ["sen", "duosen", "tresen", "kwadrinhen", "kwinhen", "sesen", "septinhen", "octinhen", "nonhen"],
+            "informal": ["sen", "dusen",  "tresen", "kwadrinhen", "kwinhen", "sesen", "septinhen", "octinhen", "nonhen"]
         },
         "special": {
-            "formal":   ["", "mi", "bi", "tri", "quadri", "quinti", "sexti", "septi", "octi", "noni"],
-            "informal": ["", "mi", "bi", "tri", "quadri", "quinti", "sexti", "septi", "octi", "noni"],
-        }
+            "formal":   ["mi", "bi", "tri", "kwadri", "kwin", "seks", "sept", "okt", "non"],
+            "informal": ["mi", "bi", "tri", "kwadri", "kwin", "seks", "sept", "okt", "non"]
+        },
+        "millia": "milya"
     },
     "suffixes": {
         "llion": "lyon",
