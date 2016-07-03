@@ -194,7 +194,7 @@
     }
 
     function normalizeValue(value) {
-        return value.trim();
+        return value.trim().toUpperCase();
     }
 
     function isValidNumber(value) {
@@ -212,30 +212,34 @@
     }
 
     function getIntegerPart(number) {
-        var dotIndex = number.indexOf('.');
+        // var dotIndex = number.indexOf('.');
 
-        if (dotIndex < 0) {
-            return number;
-        }
+        // if (dotIndex < 0 && number.indexOf('E') > 0) {
+        //     return number;
+        // }
 
-        number = number.slice(0, dotIndex);
+        // number = number.slice(0, dotIndex);
 
-        if (number === '-') {
-            return 0;
-        }
+        // if (number === '-') {
+        //     return 0;
+        // }
 
         return number;
     }
 
-    function getFractionalPart(number) {
-        var dotIndex = number.indexOf('.');
+    // function getFractionalPart(number) {
+    //     var dotIndex = number.indexOf('.');
 
-        if (dotIndex < 0) {
-            return null;
-        }
+    //     if (dotIndex < 0) {
+    //         return null;
+    //     }
 
-        return number.slice(dotIndex + 1);
-    }
+    //     if (number.indexOf('E-') > -1) {
+    //         return number;
+    //     }
+
+    //     return number.slice(dotIndex + 1);
+    // }
 
     function getPoint() {
         return config.system.base.point;
@@ -255,7 +259,7 @@
     function numberName(number) {
         var normalizedNumber = normalizeNumber(number);
             integerPart = getIntegerPart(normalizedNumber),
-            fractionalPart = getFractionalPart(normalizedNumber),
+            // fractionalPart = getFractionalPart(normalizedNumber),
             bigNumber = bigint(integerPart),
             integralName = splitInThrees(reverse(bigNumber.abs().toString()))
                 .map((kilos) => reverse(kilos))
@@ -270,10 +274,10 @@
             nameFragments.unshift(getNegative());
         }
 
-        if (fractionalPart !== null) {
-            nameFragments.push(getPoint());
-            nameFragments.push(getFractionName(fractionalPart));
-        }
+        // if (fractionalPart !== null) {
+        //     nameFragments.push(getPoint());
+        //     nameFragments.push(getFractionName(fractionalPart));
+        // }
 
         return nameFragments.join(' ');
     }
