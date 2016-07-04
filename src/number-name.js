@@ -72,6 +72,8 @@
         return Math.log(value) / Math.log(base);
     }
 
+    // TODO big-float
+
     function getKiloKilo(power, i) {
         var unitsPower = power % 10,
             tensPower = Math.floor(power / 10) % 10,

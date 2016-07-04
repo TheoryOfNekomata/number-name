@@ -2,7 +2,7 @@
   "name": "@theoryofnekomata/number-name",
   "version": "0.1.0",
   "description": "Converts a number into its name.",
-  "main": "index.js",
+  "main": "src/number-name.js",
   "dependencies": {
     "big-integer": "^1.6.15",
     "reverse-string": "0.0.4"
