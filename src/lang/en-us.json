@@ -4,8 +4,11 @@
         "variant": "American",
         "code": "en",
         "fullCode": "en-US",
-        "isLongCount": false,
+        "longCountType": null,
         "canInfixDashes": true
+    },
+    "symbols": {
+        "decimalPoint": "."
     },
     "base": {
         "zero": "zero",
@@ -14,7 +17,7 @@
         "teens":  ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"],
         "hundred": "hundred",
         "thousand": "thousand",
-        "point": "point",
+        "decimalPoint": "point",
         "negative": "negative"
     },
     "prefixes": {

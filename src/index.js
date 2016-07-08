@@ -1,78 +1,80 @@
 (function () {
     var bigint = require('big-integer'),
         reverse = require('reverse-string'),
+        normalizeExp = require('@theoryofnekomata/normalize-exponential'),
         config;
 
-    function getIsFormal() {
-        return config.formal !== false;
+    function getVariant() {
+        return config.variant;
     }
 
-    function getIsLongCount() {
-        return config.system.language.isLongCount;
+    function getLongCount() {
+        return config.system.language.longCountType;
     }
 
-    function getZero() {
+    function getZeroWord() {
         return config.system.base.zero;
     }
 
-    function getUnits(digit) {
+    function getUnitsWord(digit) {
+        if (parseInt(digit) === 0) {
+            return getZeroWord();
+        }
         return config.system.base.units[digit - 1];
     }
 
-    function getTens(digit) {
+    function getTensWord(digit) {
         return config.system.base.tens[digit - 2];
     }
 
-    function getTeens(digit) {
+    function getTeensWord(digit) {
         return config.system.base.teens[digit];
     }
 
-    function getHundred() {
+    function getHundredWord() {
         return config.system.base.hundred;
     }
 
-    function getThousand() {
+    function getThousandWord() {
         return config.system.base.thousand;
     }
 
     function getLlionLliard(power) {
-        return (getIsLongCount() && power % 2 === 1) ?
+        return (getLongCount() === 'european' && power % 2 === 1) ?
             config.system.suffixes.lliard : config.system.suffixes.llion;
     }
 
     function getSpecialUnitsKiloPrefix(power) {
-        return config.system.prefixes.special[getIsFormal() ? 'formal' : 'informal'][power - 1];
+        return config.system.prefixes.special[getVariant()][power - 1];
     }
 
     function getUnitsKiloPrefix(power) {
-        return config.system.prefixes.units[getIsFormal() ? 'formal' : 'informal'][power - 1];
+        return config.system.prefixes.units[getVariant()][power - 1];
     }
 
     function getTensKiloPrefix(power) {
-        return config.system.prefixes.tens[getIsFormal() ? 'formal' : 'informal'][power - 1];
+        return config.system.prefixes.tens[getVariant()][power - 1];
     }
 
     function getHundredsKiloPrefix(power) {
-        return config.system.prefixes.hundreds[getIsFormal() ? 'formal' : 'informal'][power - 1];
+        return config.system.prefixes.hundreds[getVariant()][power - 1];
     }
 
-    function getMillia() {
+    function getMilliaPrefix() {
         return config.system.prefixes.millia;
     }
 
-    function getNegative() {
+    function getNegativeWord() {
         return config.system.base.negative;
     }
 
     function toLatinPower(power) {
-        return (getIsLongCount() ? (power / 2) : (power - 1));
+        return (getLongCount() !== null ? (power / 2) : (power - 1));
     }
 
     function logN(value, base) {
         return Math.log(value) / Math.log(base);
     }
-
-    // TODO big-float
 
     function getKiloKilo(power, i) {
         var unitsPower = power % 10,
@@ -98,14 +100,14 @@
         }
 
         if (i > 0) {
-            prefixFragments.push(getMillia());
+            prefixFragments.push(getMilliaPrefix());
         }
 
         return prefixFragments.join(config.dashes ? '-' : '');
     }
 
     function getKiloPrefix(power) {
-        return splitInThrees(reverse('' + power))
+        return splitInThrees(reverse('' + Math.floor(power)))
             .map((kiloKilo) => reverse(kiloKilo))
             .map((kiloKilo) => parseInt(kiloKilo))
             .map(getKiloKilo)
@@ -127,21 +129,23 @@
     }
 
     function getKiloName(power) {
-        var latinPower;
+        var latinPower,
+            kiloNameFragments;
 
         if (power < 2) {
-            return power === 1 ? getThousand() : null;
+            return power === 1 ? getThousandWord() : null;
         }
 
         latinPower = toLatinPower(power);
 
-        return [
+        kiloNameFragments = [
             getKiloPrefix(latinPower),
             getTillionIllion(latinPower),
             getLlionLliard(power)
         ]
-            .filter((fragment) => fragment !== null)
-            .join(config.dashes ? '-' : '');
+            .filter((fragment) => fragment !== null);
+
+        return (getLongCount() === 'british' && power % 2 === 1 ? getThousandWord() + ' ' : '') + kiloNameFragments.join(config.dashes ? '-' : '');
     }
 
     function splitInThrees(number) {
@@ -155,32 +159,32 @@
             hundredNames = [];
 
         if (hundreds > 0) {
-            hundredNames.push(getUnits(hundreds));
-            hundredNames.push(getHundred());
+            hundredNames.push(getUnitsWord(hundreds));
+            hundredNames.push(getHundredWord());
         }
 
         if (tens > 0) {
             if (tens === 1) {
-                hundredNames.push(getTeens(ones));
+                hundredNames.push(getTeensWord(ones));
                 return hundredNames.join(' ');
             }
-            hundredNames.push(getTens(tens));
+            hundredNames.push(getTensWord(tens));
         }
 
         if (ones > 0) {
-            hundredNames.push(getUnits(ones));
+            hundredNames.push(getUnitsWord(ones));
         }
 
         return hundredNames.join(' ');
     }
 
-    function getKilo(kilo, power, kilos) {
+    function getKiloPhrase(kilo, power, kilos) {
         var kiloString = '',
             kiloName;
 
         if (kilo === 0) {
             if (kilos.length < 2 && power === 0) {
-                return getZero();
+                return getZeroWord();
             }
             return null;
         }
@@ -195,64 +199,76 @@
         return [kiloString, kiloName].join(' ');
     }
 
-    function normalizeValue(value) {
-        return value.trim().toUpperCase();
-    }
-
-    function isValidNumber(value) {
-        value = normalizeValue(value);
-
-        return /^-?([0-9]+\.?[0-9]*)|([0-9]*\.[0-9]+)$/g.test(value);
-    }
-
     function normalizeNumber(value) {
-        if (!isValidNumber(value)) {
-            throw new Error('Not a valid number.');
+        if (typeof value === 'number') {
+            value = value.toExponential().toLowerCase();
         }
 
-        return normalizeValue(value);
+        return normalizeExp(value);
     }
 
     function getIntegerPart(number) {
-        // var dotIndex = number.indexOf('.');
+        var digitsExp = number.replace(/\./g, ''),
+            expIndex = digitsExp.indexOf('e'),
+            exp = parseInt(digitsExp.slice(expIndex + 1)),
+            digits = digitsExp.slice(0, expIndex),
+            i,
+            integerPart = '';
 
-        // if (dotIndex < 0 && number.indexOf('E') > 0) {
-        //     return number;
-        // }
+        if (exp < 0) {
+            return '0';
+        }
 
-        // number = number.slice(0, dotIndex);
+        for (i = 0; exp >= 0; i++, exp--) {
+            integerPart += digits[i] || '0';
+        }
 
-        // if (number === '-') {
-        //     return 0;
-        // }
-
-        return number;
+        return integerPart;
     }
 
-    // function getFractionalPart(number) {
-    //     var dotIndex = number.indexOf('.');
+    function getDecimalPointSymbol() {
+        return config.system.symbols.decimalPoint;
+    }
 
-    //     if (dotIndex < 0) {
-    //         return null;
-    //     }
+    function getFractionalPart(number) {
+        var expIndex = number.indexOf('e'),
+            exp = parseInt(number.slice(expIndex + 1)),
+            i,
+            fractionalPart = '',
+            decPoint = getDecimalPointSymbol(),
+            decPointIdx = number.indexOf(decPoint);
 
-    //     if (number.indexOf('E-') > -1) {
-    //         return number;
-    //     }
+        number = number.slice(0, decPointIdx) + number.slice(decPointIdx + decPoint.length);
+        expIndex = number.indexOf('e')
+        exp = parseInt(number.slice(expIndex + 1));
 
-    //     return number.slice(dotIndex + 1);
-    // }
+        for (i = 0; i < expIndex; exp--, i++) {
+            if (exp >= 0) {
+                continue;
+            }
+            fractionalPart += number[i];
+        }
 
-    function getPoint() {
-        return config.system.base.point;
+        if (fractionalPart === '' || parseInt(fractionalPart) === 0) {
+            return null;
+        }
+
+        return fractionalPart;
+    }
+
+    function getDecimalPointWord() {
+        return config.system.base.decimalPoint;
     }
 
     function getFractionName(fractionalPart) {
         var i,
             nameFragments = [];
 
+
+        nameFragments.unshift(getDecimalPointWord());
+
         for(i = 0; i < fractionalPart.length; i++) {
-            nameFragments.push(getUnits(fractionalPart[i]));
+            nameFragments.push(getUnitsWord(fractionalPart[i]));
         }
 
         return nameFragments.join(' ');
@@ -261,31 +277,32 @@
     function numberName(number) {
         var normalizedNumber = normalizeNumber(number);
             integerPart = getIntegerPart(normalizedNumber),
-            // fractionalPart = getFractionalPart(normalizedNumber),
+            fractionalPart = getFractionalPart(normalizedNumber),
             bigNumber = bigint(integerPart),
             integralName = splitInThrees(reverse(bigNumber.abs().toString()))
                 .map((kilos) => reverse(kilos))
                 .map((number) => parseInt(number))
-                .map(getKilo)
+                .map(getKiloPhrase)
                 .reverse()
+                .filter((kilo) => kilo !== null)
                 .join(' ')
                 .trim(),
             nameFragments = [integralName];
 
         if (normalizedNumber.indexOf('-') === 0) {
-            nameFragments.unshift(getNegative());
+            nameFragments.unshift(getNegativeWord());
         }
 
-        // if (fractionalPart !== null) {
-        //     nameFragments.push(getPoint());
-        //     nameFragments.push(getFractionName(fractionalPart));
-        // }
+        if (fractionalPart !== null) {
+            nameFragments.push(getFractionName(fractionalPart));
+        }
 
-        return nameFragments.join(' ');
+        return nameFragments.join(' ').trim();
     }
 
     module.exports = function customNumberName(theConfig) {
         config = theConfig;
+        config.variant = config.variant || 'formal';
         return numberName;
     };
 })();

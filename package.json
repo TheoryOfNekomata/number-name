@@ -2,8 +2,9 @@
   "name": "@theoryofnekomata/number-name",
   "version": "0.1.0",
   "description": "Converts a number into its name.",
-  "main": "src/index.js",
+  "main": "index.js",
   "dependencies": {
+    "@theoryofnekomata/normalize-exponential": "^1.0.0",
     "big-integer": "^1.6.15",
     "reverse-string": "0.0.4"
   },

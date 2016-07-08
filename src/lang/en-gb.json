@@ -1,11 +1,14 @@
 {
     "language": {
         "name": "English",
-        "variant": "British",
+        "variant": "Traditional British",
         "code": "en",
         "fullCode": "en-GB",
-        "isLongCount": true,
+        "longCountType": "british",
         "canInfixDashes": true
+    },
+    "symbols": {
+        "decimalPoint": "."
     },
     "base": {
         "zero": "zero",
@@ -14,7 +17,7 @@
         "teens":  ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"],
         "hundred": "hundred",
         "thousand": "thousand",
-        "point": "point",
+        "decimalPoint": "point",
         "negative": "negative"
     },
     "prefixes": {
