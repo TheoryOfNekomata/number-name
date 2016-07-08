@@ -199,16 +199,22 @@
         return [kiloString, kiloName].join(' ');
     }
 
+    function getDecimalPointSymbol() {
+        return config.system.symbols.decimalPoint;
+    }
+
     function normalizeNumber(value) {
         if (typeof value === 'number') {
             value = value.toExponential().toLowerCase();
         }
 
-        return normalizeExp(value);
+        return normalizeExp({ decimalPoint: getDecimalPointSymbol() })(value);
     }
 
     function getIntegerPart(number) {
-        var digitsExp = number.replace(/\./g, ''),
+        var decPoint = getDecimalPointSymbol(),
+            decPointIdx = number.indexOf(decPoint),
+            digitsExp = number.slice(0, decPointIdx) + number.slice(decPointIdx + decPoint.length),
             expIndex = digitsExp.indexOf('e'),
             exp = parseInt(digitsExp.slice(expIndex + 1)),
             digits = digitsExp.slice(0, expIndex),
@@ -224,10 +230,6 @@
         }
 
         return integerPart;
-    }
-
-    function getDecimalPointSymbol() {
-        return config.system.symbols.decimalPoint;
     }
 
     function getFractionalPart(number) {
