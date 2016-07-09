@@ -215,7 +215,9 @@
                 // };
 
                 var conversions = {
-                    'milliamilliatillion': '1.0e+3000003'
+                    'milliamilliatillion': '1.0e+3000003',
+                    'milliamilliamilliatillion': '1.0e+3003003',
+                    'milliamilliaduomilliatillion': '1.0e+3006003'
                 };
 
                 Object.keys(conversions).forEach((word) => {

@@ -94,7 +94,7 @@
             if (i < 1 || i > 0 && power > 1) {
                 if (unitsPower > 0) {
                     prefixFragments.unshift(
-                        power < 10 && i < 10 ?
+                        power < 10 && i < 1 ?
                             getSpecialUnitsKiloPrefix(unitsPower) : getUnitsKiloPrefix(unitsPower)
                     );
                 }
