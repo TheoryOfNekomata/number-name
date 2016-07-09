@@ -31,12 +31,12 @@
                     {
                         label: 'expected',
                         align: 'left',
-                        width: 32
+                        width: 64
                     },
                     {
                         label: 'actual',
                         align: 'left',
-                        width: 32
+                        width: 64
                     }
                 ],
                 'rows': conversions.map((conversion) => [conversion.value, conversion.expected, conversion.actual])
