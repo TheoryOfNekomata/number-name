@@ -8,7 +8,8 @@
         "canInfixDashes": true
     },
     "symbols": {
-        "decimalPoint": "."
+        "decimalPoint": ".",
+        "digitGrouping": ","
     },
     "base": {
         "zero": "zero",

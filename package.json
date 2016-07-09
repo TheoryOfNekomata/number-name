@@ -10,10 +10,11 @@
   },
   "devDependencies": {
     "jasmine": "^2.4.1",
-    "jasmine-spec-reporter": "^2.5.0"
+    "jasmine-spec-reporter": "^2.5.0",
+    "tab": "^1.0.0"
   },
   "scripts": {
-    "test": "eslint --env jasmine,node spec/**/*.js && node test.js",
+    "test": "eslint --env jasmine,es6,node spec/**/*.js && node test.js",
     "lint": "eslint --env es6,node src/**/*.js"
   },
   "repository": {
