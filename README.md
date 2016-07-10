@@ -18,7 +18,7 @@ Via NPM:
 ## Usage
 
 ```javascript
-var NumberName = require('@theoryofnekomata/number-name')({ system: }),
+var NumberName = require('@theoryofnekomata/number-name'),
     
     // see https://github.com/Temoto-kun/number-name/tree/master/src/lang for systems
     converter = new NumberName({ system: systemObj, fractionType: 'lazy' });
