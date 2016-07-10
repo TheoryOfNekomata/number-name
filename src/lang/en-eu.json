@@ -1,0 +1,47 @@
+{
+    "language": {
+        "name": "English",
+        "variant": "European",
+        "code": "en",
+        "fullCode": "en-EU",
+        "longCountType": "european",
+        "canInfixDashes": true
+    },
+    "symbols": {
+        "decimalPoint": ",",
+        "digitGrouping": "."
+    },
+    "base": {
+        "zero": "zero",
+        "units":  [       "one",    "two",    "three",    "four",     "five",    "six",     "seven",     "eight",    "nine"],
+        "tens":   [                 "twenty", "thirty",   "forty",    "fifty",   "sixty",   "seventy",   "eighty",   "ninety"],
+        "teens":  ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"],
+        "hundred": "hundred",
+        "thousand": "thousand",
+        "decimalPoint": "comma",
+        "negative": "negative"
+    },
+    "prefixes": {
+        "units": {
+            "formal":   ["un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"],
+            "informal": ["un", "do",  "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+        },
+        "tens": {
+            "formal":   ["dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"],
+            "informal": ["dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+        },
+        "hundreds": {
+            "formal":   ["cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"],
+            "informal": ["cen", "ducen",  "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+        },
+        "special": {
+            "formal":   ["mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non"],
+            "informal": ["mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non"]
+        },
+        "millia": "millia"
+    },
+    "suffixes": {
+        "llion": "llion",
+        "lliard": "lliard"
+    }
+}

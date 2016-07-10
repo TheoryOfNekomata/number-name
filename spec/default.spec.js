@@ -176,7 +176,6 @@
                     });
 
                 [
-                    'centillion',
                     'duocentillion',
                     'trecentillion',
                     'quadringentillion',
@@ -187,7 +186,7 @@
                     'nongentillion'
                 ]
                     .forEach((word, power) => {
-                        var value = '1.0e+' + (((power + 1) * 100 + 1) * 3);
+                        var value = '1.0e+' + (((power + 2) * 100 + 1) * 3);
 
                         expectValue(value, `one ${word}`);
                     });
