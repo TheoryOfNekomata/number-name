@@ -31,19 +31,11 @@ var name2 = numberName(largeNumber); // returns five centillion
 
 ## Notes
 
-It supports conversion of:
-- numbers + optional units (integers and floats)
-- strings
-- arrays
-- objects
-- colors
-- Booleans
-- `null` and `undefined`
-- dates (powered by [Moment.js](https://momentjs.com))
+`number-name` is powered by [`big-integer`](https://www.npmjs.com/package/big-integer). With this, it can convert:
+- `Number`s
+- number-like strings
 
-It does not support conversion of
-- functions (converts it to `SassTypes.Null.NULL`)
-- complex objects (such as recursive ones)
+It can convert as high as `1.0e+3006003`. Optimization for much larger numbers is in progress.
 
 ## TODO
 
@@ -56,7 +48,7 @@ It does not support conversion of
 
 Sure thing! Just clone the repo.
 
-`to-sass-value` uses [Jasmine](https://jasmine.github.io) for unit tests, and
+`number-name` uses [Jasmine](https://jasmine.github.io) for unit tests, and
 [ESLint](http://eslint.org) to make sure code is written consistently (and implied it will
 run consistently as well).
 
