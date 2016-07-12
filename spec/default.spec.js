@@ -215,7 +215,8 @@
 
                 var conversions = {
                     'milliamilliatillion': '1.0e+3000003',
-                    'milliamilliamilliatillion': '1.0e+3003003',
+                    'milliamilliaunmilliatillion': '1.0e+3003003',
+                    'milliamilliaunmilliauntillion': '1.0e+3003006',
                     'milliamilliaduomilliatillion': '1.0e+3006003'
                 };
 

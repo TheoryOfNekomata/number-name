@@ -85,28 +85,32 @@
             return Math.log(value) / Math.log(base);
         }
 
-        function getKiloKilo(power, i) {
+        function getKiloKilo(power, i, powers) {
             var unitsPower = power % 10,
                 tensPower = Math.floor(power / 10) % 10,
                 hundredsPower = Math.floor(power / 100) % 10,
+                maxPower = powers.length - 1,
                 prefixFragments = [];
 
-            if (i < 1 || i > 0 && power > 1) {
-                if (unitsPower > 0) {
-                    prefixFragments.unshift(
-                        power < 10 && i < 1 ?
-                            getSpecialUnitsKiloPrefix(unitsPower) : getUnitsKiloPrefix(unitsPower)
-                    );
-                }
+            console.log(i, power, maxPower);
 
-                if (tensPower > 0) {
-                    prefixFragments.push(getTensKiloPrefix(tensPower));
-                }
+            //if (i < 1 || i > 0 && power > 1) {
+                // todo remove un- in unmilliatillion, unmilliamilliatillion etc.
+                    if (unitsPower > 0) {
+                        prefixFragments.unshift(
+                            power < 10 && i < 1 ?
+                                getSpecialUnitsKiloPrefix(unitsPower) : getUnitsKiloPrefix(unitsPower)
+                        );
+                    }
 
-                if (hundredsPower > 0) {
-                    prefixFragments.unshift(getHundredsKiloPrefix(hundredsPower));
-                }
-            }
+                    if (tensPower > 0) {
+                        prefixFragments.push(getTensKiloPrefix(tensPower));
+                    }
+
+                    if (hundredsPower > 0) {
+                        prefixFragments.unshift(getHundredsKiloPrefix(hundredsPower));
+                    }
+            //}
 
             if (power > 0) {
                 for (; i > 0; i--) {
@@ -130,7 +134,7 @@
         function getTillionIllion(latinPower) {
             var powerKilo = latinPower % 1000;
 
-            if (powerKilo < 5 && powerKilo > 0) {
+            if (powerKilo < 5 && powerKilo > 0 && latinPower < 1000) {
                 return null;
             }
             if (powerKilo >= 7 && powerKilo <= 10 || Math.floor(powerKilo / 10) % 10 === 1) {
@@ -147,7 +151,7 @@
                 return power === 1 ? getThousandWord() : null;
             }
 
-            latinPower = toLatinPower(power);
+            latinPower = toLatinPower(power)
 
             kiloNameFragments = [
                 getKiloPrefix(latinPower),
