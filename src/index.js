@@ -6,6 +6,7 @@
     function Config(config) {
         return {
             variant: config.variant || 'formal',
+            isShortMillia: config.isShortMillia === true,
             system: config.system || require('./lang/en-us')
         };
     }
@@ -15,6 +16,10 @@
 
         function getVariant() {
             return config.variant;
+        }
+
+        function getIsShortMillia() {
+            return config.isShortMillia;
         }
 
         function getLongCount() {
@@ -85,13 +90,27 @@
             return Math.log(value) / Math.log(base);
         }
 
+        function getMilliaRep(milliaCount) {
+            var i,
+                millias = [];
+
+            if (getIsShortMillia()) {
+                return [getMilliaPrefix() + (milliaCount > 1 ? '^' + milliaCount : '')];
+            }
+
+            for (i = milliaCount; i > 0; i--) {
+                millias.push(getMilliaPrefix());
+            }
+
+            return millias;
+        }
+
         function getKiloKilo(power, milliaCount, powers) {
             var unitsPower = power % 10,
                 tensPower = Math.floor(power / 10) % 10,
                 hundredsPower = Math.floor(power / 100) % 10,
                 maxMillia = powers.length - 1,
-                prefixFragments = [],
-                i;
+                prefixFragments = [];
                     
             if (unitsPower > 0 && (
                 maxMillia === 0 || // no millias yet, add unit prefixes
@@ -113,12 +132,8 @@
             }
 
             if (power > 0) {
-                for (i = milliaCount; i > 0; i--) {
-                    prefixFragments.push(getMilliaPrefix());
-                }
+                getMilliaRep(milliaCount).forEach((milliaRep) => prefixFragments.push(milliaRep));
             }
-
-            console.log(milliaCount, power, maxMillia, prefixFragments.join(''));
 
             return prefixFragments.join(config.dashes ? '-' : '');
         }
