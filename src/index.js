@@ -85,46 +85,47 @@
             return Math.log(value) / Math.log(base);
         }
 
-        function getKiloKilo(power, i, powers) {
+        function getKiloKilo(power, milliaCount, powers) {
             var unitsPower = power % 10,
                 tensPower = Math.floor(power / 10) % 10,
                 hundredsPower = Math.floor(power / 100) % 10,
-                maxPower = powers.length - 1,
-                prefixFragments = [];
+                maxMillia = powers.length - 1,
+                prefixFragments = [],
+                i;
+                    
+            if (unitsPower > 0 && (
+                maxMillia === 0 || // no millias yet, add unit prefixes
+                milliaCount < maxMillia || // has millias, add unit prefixes for lower millias...
+                milliaCount === maxMillia && unitsPower > 1 // ... and don't add for largest millia if unit power is 1 (safely say a milliatillion == unmilliatillion)
+            )) {
+                prefixFragments.unshift(
+                    power < 10 && milliaCount < 1 && maxMillia < 1 ?
+                        getSpecialUnitsKiloPrefix(unitsPower) : getUnitsKiloPrefix(unitsPower)
+                );
+            }
 
-            console.log(i, power, maxPower);
+            if (tensPower > 0) {
+                prefixFragments.push(getTensKiloPrefix(tensPower));
+            }
 
-            //if (i < 1 || i > 0 && power > 1) {
-                // todo remove un- in unmilliatillion, unmilliamilliatillion etc.
-                    if (unitsPower > 0) {
-                        prefixFragments.unshift(
-                            power < 10 && i < 1 ?
-                                getSpecialUnitsKiloPrefix(unitsPower) : getUnitsKiloPrefix(unitsPower)
-                        );
-                    }
-
-                    if (tensPower > 0) {
-                        prefixFragments.push(getTensKiloPrefix(tensPower));
-                    }
-
-                    if (hundredsPower > 0) {
-                        prefixFragments.unshift(getHundredsKiloPrefix(hundredsPower));
-                    }
-            //}
+            if (hundredsPower > 0) {
+                prefixFragments.unshift(getHundredsKiloPrefix(hundredsPower));
+            }
 
             if (power > 0) {
-                for (; i > 0; i--) {
+                for (i = milliaCount; i > 0; i--) {
                     prefixFragments.push(getMilliaPrefix());
                 }
             }
+
+            console.log(milliaCount, power, maxMillia, prefixFragments.join(''));
 
             return prefixFragments.join(config.dashes ? '-' : '');
         }
 
         function getKiloPrefix(power) {
             return splitInThrees(reverse('' + Math.floor(power)))
-                .map((kiloKilo) => reverse(kiloKilo))
-                .map((kiloKilo) => parseInt(kiloKilo))
+                .map((kiloKilo) => parseInt(reverse(kiloKilo)))
                 .map(getKiloKilo)
                 .reverse()
                 .join(config.dashes ? '-' : '')
@@ -364,8 +365,7 @@
                 fractionalPart = getFractionalPart(fraction),
                 bigNumber = bigint(integerPart),
                 integralName = splitInThrees(reverse(bigNumber.abs().toString()))
-                    .map((kilos) => reverse(kilos))
-                    .map((number) => parseInt(number))
+                    .map((kilos) => parseInt(reverse(kilos)))
                     .map(getKiloPhrase)
                     .reverse()
                     .filter((kilo) => kilo !== null)
