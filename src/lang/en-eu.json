@@ -21,6 +21,16 @@
         "decimalPoint": "comma",
         "negative": "negative"
     },
+    "ordinal": {
+        "1": "first",
+        "2": "second",
+        "3": "third",
+        "5": "fifth",
+        "12": "twelfth"
+    },
+    "fractions": {
+        "halves": "halves"
+    },
     "prefixes": {
         "units": {
             "formal":   ["un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"],

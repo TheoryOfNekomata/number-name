@@ -4,7 +4,7 @@
     var american = require('./../src/lang/en-us'),
         NumberName = require('./../src/index'),
         tab = require('tab'),
-        us = new NumberName({ system: american, fractionType: 'lazy' });
+        us = new NumberName({ system: american }); // default fractionType should be 'digits'
 
     describe('number-name', function () {
         var conversions = [];
