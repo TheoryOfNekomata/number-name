@@ -32,17 +32,17 @@ Via NPM:
 ## Notes
 
 `number-name` is powered by [`big-integer`](https://www.npmjs.com/package/big-integer). With this, it can convert:
-    - `Number`s
-    - number-like strings
+- `Number`s
+- number-like strings
 
 It can convert numbers as high as `1.0e+3006003`. Optimization for much larger numbers is in progress.
 
 ## TODO
 
-    - [ ] Fully localizable number systems (e.g. custom rules for combining fragments of number words)
-    - [ ] Implement other `fractionType`s, (only `lazy` (digits) is supported as of 0.2.0, e.g. `0.05` => `zero point zero five`,
-          will implement `ratio` (`zero and five over one hundred`) and `part` (`zero and five hundredths`))
-    - [ ] Upon adding more features, update the unit tests as well.
+- [ ] Fully localizable number systems (e.g. custom rules for combining fragments of number words)
+- [ ] Implement other `fractionType`s, (only `lazy` (digits) is supported as of 0.2.0, e.g. `0.05` => `zero point zero five`,
+      will implement `ratio` (`zero and five over one hundred`) and `part` (`zero and five hundredths`))
+- [ ] Upon adding more features, update the unit tests as well.
 
 ## Contribution
 
@@ -52,10 +52,10 @@ Sure thing! Just clone the repo.
 [ESLint](http://eslint.org) to make sure code is written consistently (and implied it will
 run consistently as well).
 
-    - Run `npm install` upon initial clone.
-    - Run `npm test` and make sure all the tests pass and properly written.
-    - Run `npm run lint` to ensure consistency of your code (make sure to install ESLint first).
-    - Create PRs so that I can confirm and merge your contributions.
+- Run `npm install` upon initial clone.
+- Run `npm test` and make sure all the tests pass and properly written.
+- Run `npm run lint` to ensure consistency of your code (make sure to install ESLint first).
+- Create PRs so that I can confirm and merge your contributions.
 
 Please star the repo if you find it useful in your projects.
 
