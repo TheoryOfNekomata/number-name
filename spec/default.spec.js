@@ -1,10 +1,9 @@
 /* eslint-disable global-require, func-names, no-undefined, no-console */
 
 (function () {
-    var american = require('./../src/lang/en-us'),
-        NumberName = require('./../src/index'),
+    var NumberName = require('./../src/index'),
         tab = require('tab'),
-        us = new NumberName({ system: american });
+        us = new NumberName({ system: 'american' });
 
     describe('number-name', function () {
         var conversions = [];
@@ -51,7 +50,6 @@
         });
 
         describe('upon converting numbers', function () {
-
             it('should be able to convert 0..9', function () {
                 [ 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ].forEach(function (conversion, value) {
                     expectValue(value, conversion);
@@ -194,20 +192,16 @@
             });
 
             it('should be able to convert astronomic size numbers', function () {
-                // var conversions = {
-                //     'milliamilliatillion': '1.0e+3000003',
-                //     'octingensexquinquaginmilliamilliaseptingensexseptuaginmilliaquingenundecillion': '1.0e+2570329536',
-                //     'milliamilliamilliatillion': '1.0e+3000000003',
-                //     'trecenunnonaginmilliamilliamilliaquingenunoctoginmilliamilliaduocensexdecmilliacenduononagintillion': '1.0e+1174743648579',
-                //     'milliamilliamilliamilliatillion': '1.0e+3000000000003',
-                //     'duocenduotriginmilliamilliamilliamilliaduononaginmilliamilliamilliacenseptuagin milliamilliacennovemdecmillianongensextrigintillion': '1.0e+696276510359811'
-                // };
-
                 var conversions = {
                     'milliamilliatillion': '1.0e+3000003',
                     'milliamilliaunmilliatillion': '1.0e+3003003',
                     'milliamilliaunmilliauntillion': '1.0e+3003006',
-                    'milliamilliaduomilliatillion': '1.0e+3006003'
+                    'milliamilliaduomilliatillion': '1.0e+3006003',
+                    'octingensexquinquaginmilliamilliaseptingensexseptuaginmilliaquingenundecillion': '1.0e+2570329536',
+                    'milliamilliamilliatillion': '1.0e+3000000003',
+                    'trecenunnonaginmilliamilliamilliaquingenunoctoginmilliamilliaduocensexdecmilliacenduononagintillion': '1.0e+1174743648579',
+                    'milliamilliamilliamilliatillion': '1.0e+3000000000003',
+                    'duocenduotriginmilliamilliamilliamilliaduononaginmilliamilliamilliacenseptuaginmilliamilliacennovemdecmillianongensextrigintillion': '1.0e+696276510359811'
                 };
 
                 Object.keys(conversions).forEach(function (word) {

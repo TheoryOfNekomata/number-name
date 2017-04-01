@@ -11,11 +11,8 @@
 
 <div class="warning alert">
   <p>
-    Please note that this converter is unable to convert numbers outside 1E&plusmn;3006003 yet.
-  </p>
-  <p>
-    Also beware that putting a very small value in your exponent magnitude (e.g. 1E&minus;99999) will crash your browser
-    because of a <strong>LOT</strong> of zeroes. The algorithm will be tweaked in the future to allow conversion
+    Beware that putting a very small value in your exponent magnitude (e.g. 1E&minus;99999) will crash your browser
+    because of a <strong>LOT</strong> of decimal digits. The algorithm will be tweaked in the future to allow conversion
     of decimals like in integral parts.
   </p>
 </div>
@@ -25,7 +22,11 @@
     <legend>Input</legend>
     <div class="field">
       <label for="input">Input</label>
-      <textarea class="input" name="input" id="input"></textarea>
+      <textarea class="input" name="input" id="input" maxlength="3006"></textarea>
+      <p>
+        You can input up to <code>9.99e+27021597764222971</code> before the Latin power overflows due to JavaScript's
+        handling of integers.
+      </p>
     </div>
 
     <div class="field">
@@ -54,6 +55,20 @@
       </select>
     </div>
 
+    <div class="field">
+      <label>
+        <input type="checkbox" class="dashes" name="dashes">
+        Add dashes
+      </label>
+    </div>
+
+    <div class="field">
+      <label>
+        <input type="checkbox" class="shortmillia" name="short_millia">
+        millia<sub><var>n</var></sub> notation
+      </label>
+    </div>
+
     <div class="field -button">
       <button type="submit">Submit</button>
     </div>
@@ -76,6 +91,8 @@
             var input = element.querySelector('.input'),
                 system = element.querySelector('.system'),
                 variant = element.querySelector('.variant'),
+                shortMillia = element.querySelector('.shortmillia'),
+                dashes = element.querySelector('.dashes'),
                 fractionType = element.querySelector('.fractiontype'),
                 output = element.querySelector('.output'),
                 errorOutput = element.querySelector('.error');
@@ -87,8 +104,15 @@
                     throw new Error('Invalid input');
                 }
 
-                output.innerText = new NumberName({ fractionType: fractionType.value, system: system.value, variant: variant.value })
-                    .toName(input.value);
+                output.innerHTML = new NumberName({
+                    fractionType: fractionType.value,
+                    system: system.value,
+                    variant: variant.value,
+                    dashes: dashes.checked,
+                    isShortMillia: shortMillia.checked
+                })
+                    .toName(input.value)
+                    .replace(/\^([0-9]+?)/g, '<sub>$1</sub>');
                 errorOutput.innerText = '';
             } catch (e) {
                 output.innerText = '';

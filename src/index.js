@@ -156,7 +156,8 @@
 
 var TEN = 10,
     ONE_HUNDRED = 100,
-    ONE_THOUSAND = 1000;
+    ONE_THOUSAND = 1000,
+    LARGE_NUMBER_EXP_MAGNITUDE_THRESHOLD = 3006;
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -405,7 +406,8 @@ var TEN = 10,
             variant: config.variant || 'formal',
             isShortMillia: config.isShortMillia === true,
             system: config.system || defaultSystems.american,
-            fractionType: config.fractionType || 'digits'
+            fractionType: config.fractionType || 'digits',
+            dashes: config.dashes === true
         };
     }
 
@@ -414,7 +416,7 @@ var TEN = 10,
      * @param {Object} theConfig The configuration object.
      * @class
      */
-    return function numberName(theConfig) {
+    return function NumberName(theConfig) {
         var config = new Config(theConfig);
 
         /**
@@ -640,7 +642,7 @@ var TEN = 10,
             var i,
                 millias = [];
 
-            if (getIsShortMillia()) {
+            if (getIsShortMillia() && milliaCount > 0) {
                 return [ getMilliaPrefix() + (milliaCount > 1 ? '^' + milliaCount : '') ];
             }
 
@@ -654,7 +656,7 @@ var TEN = 10,
         /**
          * Gets the kilo-kilo (the thousands of the Latin power).
          * @param {Number} latinPowerKilo The Latin power for the kilo.
-         * @param {Number} milliaCount
+         * @param {Number} milliaCount The number of 'millia's to be appended.
          * @param {Number} kilos
          * @returns {String} The fragment of the name of the Latin power kilo.
          */
@@ -672,7 +674,7 @@ var TEN = 10,
                     // Has millias, add unit prefixes for lower millias...
                     milliaCount < lastKilo ||
                     // ...and don't add for largest millia if unit power is 1 (safely say a milliatillion == unmilliatillion)
-                    milliaCount === lastKilo && kiloOnes > 1
+                    milliaCount === lastKilo && latinPowerKilo > 1
                 )) {
                 prefixFragments.unshift(
                     latinPowerKilo < TEN && milliaCount < 1 && lastKilo < 1 ?
@@ -708,7 +710,9 @@ var TEN = 10,
                 .map(function (kiloKilo) {
                     return parseInt(reverse(kiloKilo));
                 })
-                .map(getKiloKilo)
+                .map(function (latinPowerKilo, milliaCount, kilos) {
+                    return getKiloKilo(latinPowerKilo, milliaCount, kilos);
+                })
                 .reverse()
                 .join(getHasDashes() ? '-' : '')
                 .trim();
@@ -792,23 +796,23 @@ var TEN = 10,
         /**
          * Gets the phrase of the kilo (i.e. "one million two hundred forty five", there are two phrases:
          * "one million", and "two hundred forty five".
-         * @param {Number} kilo The kilo
+         * @param {Number} kiloDigits The kilo
          * @param {Number} power The power of the kilo.
          * @param {Number[]} kilos All the kilos.
          * @returns {String} The kilo phrase.
          */
-        function getKiloPhrase(kilo, power, kilos) {
-            var kiloString = '',
+        function getKiloPhrase(kiloDigits, power, kilos) {
+            var kiloString,
                 kiloName;
 
-            if (kilo === 0) {
+            if (kiloDigits === 0) {
                 if (kilos.length < 2 && power === 0) {
                     return getZeroWord();
                 }
                 return null;
             }
 
-            kiloString = getHundredName(kilo);
+            kiloString = getHundredName(kiloDigits);
             kiloName = getKiloName(power);
 
             if (kiloName === null) {
@@ -990,6 +994,100 @@ var TEN = 10,
             return number;
         }
 
+        function extractIntegralDigits(number) {
+            var decimalPointSymbol = getDecimalPointSymbol(),
+                decimalPointSymbolIdx;
+
+            while ((decimalPointSymbolIdx = number.lastIndexOf(decimalPointSymbol)) > -1) {
+                number = number.slice(0, decimalPointSymbolIdx) + number.slice(decimalPointSymbolIdx + decimalPointSymbol.length);
+            }
+
+            return degroupNumber(number).replace(getNegativeSymbol(), '').replace(/0+$/, '');
+        }
+
+        function padKiloDigits(digits, exponentMagnitude) {
+            var paddedDigits = digits,
+                zeroesToLeft = (5 - (exponentMagnitude % 3)) % 3,
+                i;
+
+            for (i = 1; i <= zeroesToLeft; i++) {
+                (function () {
+                    paddedDigits = '0' + paddedDigits;
+                })();
+            }
+
+            while (paddedDigits.length % 3 !== 0) {
+                paddedDigits += '0';
+            }
+
+            return paddedDigits + '000';
+        }
+
+        function toNameLarger(normalizedNumber, exponentMagnitude) {
+            var digits = extractIntegralDigits(normalizedNumber.match(/(.+?)[Ee]/)[1]),
+                paddedNumber = padKiloDigits(digits, exponentMagnitude),
+                maxKilo = Math.floor(exponentMagnitude / 3),
+                minKilo = maxKilo - Math.floor(paddedNumber.length / 3) + 1,
+                integralName = splitInThrees(reverse(paddedNumber))
+                    .map(function (kilos) {
+                        return parseInt(reverse(kilos));
+                    })
+                    .map(function (kiloDigits, kilo, kilos) {
+                        return getKiloPhrase(kiloDigits, kilo + minKilo, kilos);
+                    })
+                    .reverse()
+                    .filter(function (kilo) {
+                        return kilo !== null;
+                    })
+                    .join(' ')
+                    .trim(),
+                nameFragments = [ integralName ];
+
+            if (normalizedNumber.indexOf('-') === 0) {
+                nameFragments.unshift(getNegativeWord());
+            }
+
+            return nameFragments.join(' ').replace(/--+/g, '-').trim();
+        }
+
+        function toNameSmaller(normalizedNumber) {
+            var fraction,
+                integerPart,
+                fractionalPart,
+                bigNumber,
+                integralName,
+                nameFragments;
+
+            fraction = exponentialToFloat(normalizedNumber);
+            integerPart = getIntegerPart(fraction);
+            fractionalPart = getFractionalPart(fraction);
+            bigNumber = bigint(integerPart);
+            integralName = splitInThrees(reverse(bigNumber.abs().toString()))
+                .map(function (kilos) {
+                    return parseInt(reverse(kilos));
+                })
+                .map(function (kiloDigits, kilo, kilos) {
+                    return getKiloPhrase(kiloDigits, kilo, kilos, 0);
+                })
+                .reverse()
+                .filter(function (kilo) {
+                    return kilo !== null;
+                })
+                .join(' ')
+                .trim();
+            nameFragments = [ integralName ];
+
+            if (normalizedNumber.indexOf('-') === 0) {
+                nameFragments.unshift(getNegativeWord());
+            }
+
+            if (fractionalPart !== null) {
+                nameFragments.push(getFractionName(fractionalPart));
+            }
+
+            return nameFragments.join(' ').replace(/--+/g, '-').trim();
+        }
+
         /**
          * Converts a number to a name.
          * @param {String|Number} number A number.
@@ -998,53 +1096,24 @@ var TEN = 10,
         this.toName = function toName(number) {
             var degroupedNumber,
                 normalizedNumber,
-                exponentMagnitude,
-                fraction,
-                integerPart,
-                fractionalPart,
-                bigNumber,
-                integralName,
-                nameFragments;
+                exponentMagnitude;
 
-            try {
-                number = number.replace(/\s/g, '');
-                degroupedNumber = degroupNumber('' + number);
-                normalizedNumber = normalizeNumber(degroupedNumber);
-                exponentMagnitude = parseInt(normalizedNumber.match(/([Ee]([+\-]?.+))$/)[2]);
+            number = '' + number;
+            number = number.replace(/\s/g, '');
+            degroupedNumber = degroupNumber('' + number);
+            normalizedNumber = normalizeNumber(degroupedNumber);
 
-                if (Math.abs(exponentMagnitude) > 3006003) {
-                    throw new Error('No implementation for larger numbers yet!');
-                }
-
-                fraction = exponentialToFloat(normalizedNumber);
-                integerPart = getIntegerPart(fraction);
-                fractionalPart = getFractionalPart(fraction);
-                bigNumber = bigint(integerPart);
-                integralName = splitInThrees(reverse(bigNumber.abs().toString()))
-                    .map(function (kilos) {
-                        return parseInt(reverse(kilos));
-                    })
-                    .map(getKiloPhrase)
-                    .reverse()
-                    .filter(function (kilo) {
-                        return kilo !== null;
-                    })
-                    .join(' ')
-                    .trim();
-                nameFragments = [ integralName ];
-
-                if (normalizedNumber.indexOf('-') === 0) {
-                    nameFragments.unshift(getNegativeWord());
-                }
-
-                if (fractionalPart !== null) {
-                    nameFragments.push(getFractionName(fractionalPart));
-                }
-            } catch (e) {
+            if (!/[+\-]?[0-9.][Ee][+\-][0-9]/.test(normalizedNumber)) {
                 throw new Error('Invalid number: "' + number + '"');
             }
 
-            return nameFragments.join(' ').trim();
+            exponentMagnitude = parseInt(normalizedNumber.match(/[Ee]([+\-]?.+)$/)[1]);
+
+            if (Math.abs(exponentMagnitude) >= LARGE_NUMBER_EXP_MAGNITUDE_THRESHOLD) {
+                return toNameLarger(normalizedNumber, exponentMagnitude);
+            }
+
+            return toNameSmaller(normalizedNumber);
         };
 
         this.getDigitGroupingSymbol = getDigitGroupingSymbol;

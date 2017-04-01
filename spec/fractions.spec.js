@@ -1,10 +1,9 @@
 /* eslint-disable global-require, func-names, no-undefined, no-console */
 
 (function () {
-    var american = require('./../src/lang/en-us'),
-        NumberName = require('./../src/index'),
+    var NumberName = require('./../src/index'),
         tab = require('tab'),
-        us = new NumberName({ system: american }); // default fractionType should be 'digits'
+        us = new NumberName({ system: 'american' }); // default fractionType should be 'digits'
 
     describe('number-name', function () {
         var conversions = [];

@@ -49,7 +49,7 @@ label {
   margin-bottom: 0.5em;
 }
 
-label, input, select, textarea, output, .alert {
+label, input[type="text"], select, textarea, output, .alert {
   display: block;
   width: 100%;
 }
@@ -62,7 +62,7 @@ textarea, output {
   margin-bottom: 1em;
 }
 
-input, select, textarea, output:not(:empty), .alert {
+input[type="text"], select, textarea, output:not(:empty), .alert {
   border: 1px solid;
   padding: 8px;
 
