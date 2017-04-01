@@ -1,6 +1,6 @@
 {
   "name": "@theoryofnekomata/number-name",
-  "version": "0.2.1",
+  "version": "0.8.0",
   "description": "Converts a number into its name.",
   "main": "index.js",
   "dependencies": {
@@ -12,7 +12,10 @@
     "commander": "^2.9.0",
     "jasmine": "^2.4.1",
     "jasmine-spec-reporter": "^2.5.0",
-    "tab": "^1.0.0"
+    "json-loader": "^0.5.4",
+    "source-map-loader": "^0.2.1",
+    "tab": "^1.0.0",
+    "webpack": "^2.3.2"
   },
   "scripts": {
     "test": "eslint --env jasmine,es6,node spec/**/*.js && node test.js",
@@ -37,6 +40,9 @@
   "homepage": "https://github.com/Temoto-kun/number-name#readme",
   "eslintConfig": {
     "root": true,
-    "extends": "@theoryofnekomata/eslint-config-q3-2016"
+    "extends": "eslint:recommended",
+    "env": {
+      "commonjs": true
+    }
   }
 }

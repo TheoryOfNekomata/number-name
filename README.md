@@ -25,8 +25,8 @@ Via NPM:
 
     var smallerNumber = -6.9e-42; // Number is OK. Can convert negative numbers just fine.
     var largeNumber = '5.0e+303'; // note this is too large for a normal Number, so it is represented as string
-    var name1 = numberName(smallerNumber); // returns the long fractional name with six nine in the end
-    var name2 = numberName(largeNumber); // returns five centillion
+    var name1 = numberName(smallerNumber); // returns the long fractional name with "...six nine" in the end
+    var name2 = numberName(largeNumber); // returns "five centillion"
 ```
 
 ## Notes

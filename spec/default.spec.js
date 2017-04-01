@@ -10,7 +10,7 @@
         var conversions = [];
 
         function expectValue(value, expected) {
-            var actual = us(value);
+            var actual = us.toName(value);
 
             conversions.push({
                 value: value,
@@ -39,7 +39,9 @@
                         width: 64
                     }
                 ],
-                'rows': conversions.map((conversion) => [conversion.value, conversion.expected, conversion.actual])
+                'rows': conversions.map(function (conversion) {
+                    return [ conversion.value, conversion.expected, conversion.actual ];
+                })
             });
         }
 
@@ -48,48 +50,36 @@
             console.log();
         });
 
-        describe('upon converting numbers', function () {            
+        describe('upon converting numbers', function () {
 
             it('should be able to convert 0..9', function () {
-                ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'].forEach((conversion, value) => {
+                [ 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ].forEach(function (conversion, value) {
                     expectValue(value, conversion);
                 });
             });
 
             it('should be able to convert 10..19', function () {
-                ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'].forEach((conversion, unit) => {
+                [ 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ].forEach(function (conversion, unit) {
                     expectValue(10 + unit, conversion);
                 });
             });
 
             it('should be able to convert tens', function () {
-                ['zero', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'].forEach((conversion, factor) => {
-                    if (factor < 2) {
-                        return;
-                    }
-
-                    expectValue(10 * factor, conversion);
+                [ 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ].forEach(function (conversion, factor) {
+                    expectValue(10 * (factor + 2), conversion);
                 });
             });
 
             it('should be able to convert hundreds', function () {
-                ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'].forEach((word, unit) => {
-                    if (unit === 0) {
-                        return;
-                    }
-
-                    expectValue(unit * 100, `${word} hundred`);
+                [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ].forEach(function (word, unit) {
+                    expectValue((unit + 1) * 100, word + ' hundred');
                 });
             });
 
             it('should be able to convert thousands', function () {
                 // TODO consider 1000 => US ("ten hundred")
-                ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'].forEach((word, unit) => {
-                    if (unit === 0) {
-                        return;
-                    }
-
-                    expectValue(unit * 1000, `${word} thousand`);
+                [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ].forEach(function (word, unit) {
+                    expectValue((unit + 1) * 1000, word + ' thousand');
                 });
             });
 
@@ -125,10 +115,10 @@
                     'octovigintillion',
                     'novemvigintillion'
                 ]
-                    .forEach((word, power) => {
+                    .forEach(function (word, power) {
                         var value = '1.0e+' + ((power + 2) * 3);
 
-                        expectValue(value, `one ${word}`);
+                        expectValue(value, 'one ' + word);
                     });
             });
 
@@ -141,8 +131,8 @@
                     'novemnonagintillion': '1.0e+300'
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `one ${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], 'one ' + word);
                 });
             });
 
@@ -169,10 +159,10 @@
                     'cenoctodecillion',
                     'cennovemdecillion'
                 ]
-                    .forEach((word, power) => {
+                    .forEach(function (word, power) {
                         var value = '1.0e+' + ((power + 101) * 3);
 
-                        expectValue(value, `one ${word}`);
+                        expectValue(value, 'one ' + word);
                     });
 
                 [
@@ -185,10 +175,10 @@
                     'octingentillion',
                     'nongentillion'
                 ]
-                    .forEach((word, power) => {
+                    .forEach(function (word, power) {
                         var value = '1.0e+' + (((power + 2) * 100 + 1) * 3);
 
-                        expectValue(value, `one ${word}`);
+                        expectValue(value, 'one ' + word);
                     });
             });
 
@@ -198,8 +188,8 @@
                     'duotriginmilliasescenquattuorseptuagintillion': '1.0e+98025'
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `one ${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], 'one ' + word);
                 });
             });
 
@@ -220,8 +210,8 @@
                     'milliamilliaduomilliatillion': '1.0e+3006003'
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `one ${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], 'one ' + word);
                 });
             });
         });

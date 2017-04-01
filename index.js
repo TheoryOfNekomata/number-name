@@ -1,3 +1,3 @@
-(function () {
-    module.exports = require('./src/index');
-})();
+#!/usr/bin/env node
+
+module.exports = require('./src/index');

@@ -10,7 +10,7 @@
         var conversions = [];
 
         function expectValue(value, expected) {
-            var actual = us(value);
+            var actual = us.toName(value);
 
             conversions.push({
                 value: value,
@@ -39,7 +39,9 @@
                         width: 64
                     }
                 ],
-                'rows': conversions.map((conversion) => [conversion.value, conversion.expected, conversion.actual])
+                'rows': conversions.map(function (conversion) {
+                    return [ conversion.value, conversion.expected, conversion.actual ];
+                })
             });
         }
 
@@ -48,7 +50,7 @@
             console.log();
         });
 
-        describe('upon converting fractions', function () {            
+        describe('upon converting fractions', function () {
             it('should be able to convert x, where 0 < x < 1', function () {
                 var conversions = {
                     'zero point zero zero five': '0.005',
@@ -57,8 +59,8 @@
                     'zero point zero zero three one two five': '.003125'
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], word);
                 });
             });
 
@@ -70,8 +72,8 @@
                     'nine point zero zero three one two five': '9.003125'
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], word);
                 });
             });
 
@@ -83,8 +85,8 @@
                     'ninety nine point zero zero three one two five': '99.003125'
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], word);
                 });
             });
 
@@ -95,8 +97,8 @@
                     'zero point zero zero zero zero zero zero zero six': 6.0e-8
                 };
 
-                Object.keys(conversions).forEach((word) => {
-                    expectValue(conversions[word], `${word}`);
+                Object.keys(conversions).forEach(function (word) {
+                    expectValue(conversions[ word ], word);
                 });
             });
         });

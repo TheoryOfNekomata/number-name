@@ -3,7 +3,7 @@
         "name": "English",
         "variant": "Traditional British",
         "code": "en",
-        "fullCode": "en-GB",
+        "fullCode": "en-UK",
         "longCountType": "british",
         "canInfixDashes": true
     },
