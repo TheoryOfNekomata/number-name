@@ -998,6 +998,7 @@ var TEN = 10,
         this.toName = function toName(number) {
             var degroupedNumber,
                 normalizedNumber,
+                exponentMagnitude,
                 fraction,
                 integerPart,
                 fractionalPart,
@@ -1009,6 +1010,12 @@ var TEN = 10,
                 number = number.replace(/\s/g, '');
                 degroupedNumber = degroupNumber('' + number);
                 normalizedNumber = normalizeNumber(degroupedNumber);
+                exponentMagnitude = parseInt(normalizedNumber.match(/([Ee]([+\-]?.+))$/)[2]);
+
+                if (Math.abs(exponentMagnitude) > 3006003) {
+                    throw new Error('No implementation for larger numbers yet!');
+                }
+
                 fraction = exponentialToFloat(normalizedNumber);
                 integerPart = getIntegerPart(fraction);
                 fractionalPart = getFractionalPart(fraction);

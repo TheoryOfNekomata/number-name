@@ -18,6 +18,10 @@ title {
   color: #000;
 }
 
+p {
+  margin-bottom: 1em;
+}
+
 body {
   margin: 64px;
 }
@@ -41,7 +45,11 @@ legend {
   color: #000;
 }
 
-label, input, select, textarea, output {
+label {
+  margin-bottom: 0.5em;
+}
+
+label, input, select, textarea, output, .alert {
   display: block;
   width: 100%;
 }
@@ -50,7 +58,11 @@ textarea, output {
   resize: vertical;
 }
 
-input, select, textarea, output:not(:empty) {
+.alert {
+  margin-bottom: 1em;
+}
+
+input, select, textarea, output:not(:empty), .alert {
   border: 1px solid;
   padding: 8px;
 
@@ -77,6 +89,10 @@ input[type="reset"], input[type="submit"], button {
 
 .error {
   color: #f00 !important;
+}
+
+.warning {
+  color: #f90 !important;
 }
 
 @media (min-width: 768px) {
