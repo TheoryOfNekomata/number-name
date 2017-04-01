@@ -152,972 +152,753 @@
  * systems" (see the previous section).
  */
 
-/* global define */
-
 var TEN = 10,
     ONE_HUNDRED = 100,
     ONE_THOUSAND = 1000,
-    LARGE_NUMBER_EXP_MAGNITUDE_THRESHOLD = 3006;
+    LARGE_NUMBER_EXP_MAGNITUDE_THRESHOLD = 3006,
 
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(
-            [ 'big-integer', 'reverse-string', '@theoryofnekomata/normalize-exponential' ],
-            function (bigint, reverse, ExpNormalizer) {
-                return (root.NumberName = factory(bigint, reverse, ExpNormalizer));
-            }
-        );
-    } else if (typeof module.exports === 'object' && module.exports) {
-        module.exports = factory(
-            require('big-integer'),
-            require('reverse-string'),
-            require('@theoryofnekomata/normalize-exponential')
-        );
-    } else {
-        root.NumberName = factory(root.bigInteger, root.reverseString, root.NormalizeExponential);
-    }
-})(this, function (bigint, reverse, ExpNormalizer) {
-    var systemAliases = {
-            "american": [
-                "america", "us", "usa", "unitedstates", "unitedstatesofamerica", "modernbritish"
-            ],
-            "european": [
-                "europe", "eu", "eur"
-            ],
-            "british": [
-                "uk", "unitedkingdom", "britain", "greatbritain", "oldenglish"
-            ]
-        },
-        defaultSystems = {
-            american: {
-                "language": {
-                    "name": "English",
-                    "variant": "American",
-                    "code": "en",
-                    "fullCode": "en-US",
-                    "longCountType": null,
-                    "canInfixDashes": true
-                },
-                "symbols": {
-                    "decimalPoint": ".",
-                    "digitGrouping": ","
-                },
-                "base": {
-                    "zero": "zero",
-                    "units": [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ],
-                    "tens": [ "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" ],
-                    "teens": [ "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" ],
-                    "hundred": "hundred",
-                    "thousand": "thousand",
-                    "decimalPoint": "point",
-                    "negative": "negative"
-                },
-                "ordinal": {
-                    "1": "first",
-                    "2": "second",
-                    "3": "third",
-                    "5": "fifth",
-                    "12": "twelfth"
-                },
-                "fractions": {
-                    "halves": "halves"
-                },
-                "prefixes": {
-                    "units": {
-                        "formal": [ "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem" ],
-                        "informal": [ "un", "do", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem" ]
-                    },
-                    "tens": {
-                        "formal": [ "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin" ],
-                        "informal": [ "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin" ]
-                    },
-                    "hundreds": {
-                        "formal": [ "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen" ],
-                        "informal": [ "cen", "ducen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen" ]
-                    },
-                    "special": {
-                        "formal": [ "mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non" ],
-                        "informal": [ "mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non" ]
-                    },
-                    "millia": "millia"
-                },
-                "suffixes": {
-                    "llion": "llion",
-                    "lliard": "lliard"
-                }
-            },
-            british: {
-                "language": {
-                    "name": "English",
-                    "variant": "Traditional British",
-                    "code": "en",
-                    "fullCode": "en-UK",
-                    "longCountType": "british",
-                    "canInfixDashes": true
-                },
-                "symbols": {
-                    "decimalPoint": ".",
-                    "digitGrouping": ","
-                },
-                "base": {
-                    "zero": "naught",
-                    "units": [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ],
-                    "tens": [ "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" ],
-                    "teens": [ "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" ],
-                    "hundred": "hundred",
-                    "thousand": "thousand",
-                    "decimalPoint": "point",
-                    "negative": "negative"
-                },
-                "ordinal": {
-                    "1": "first",
-                    "2": "second",
-                    "3": "third",
-                    "5": "fifth",
-                    "12": "twelfth"
-                },
-                "fractions": {
-                    "halves": "halves"
-                },
-                "prefixes": {
-                    "units": {
-                        "formal": [ "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem" ],
-                        "informal": [ "un", "do", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem" ]
-                    },
-                    "tens": {
-                        "formal": [ "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin" ],
-                        "informal": [ "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin" ]
-                    },
-                    "hundreds": {
-                        "formal": [ "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen" ],
-                        "informal": [ "cen", "ducen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen" ]
-                    },
-                    "special": {
-                        "formal": [ "mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non" ],
-                        "informal": [ "mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non" ]
-                    },
-                    "millia": "millia"
-                },
-                "suffixes": {
-                    "llion": "llion",
-                    "lliard": "lliard"
-                }
-            },
-            european: {
-                "language": {
-                    "name": "English",
-                    "variant": "European",
-                    "code": "en",
-                    "fullCode": "en-EU",
-                    "longCountType": "european",
-                    "canInfixDashes": true
-                },
-                "symbols": {
-                    "decimalPoint": ",",
-                    "digitGrouping": "."
-                },
-                "base": {
-                    "zero": "zero",
-                    "units": [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ],
-                    "tens": [ "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" ],
-                    "teens": [ "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" ],
-                    "hundred": "hundred",
-                    "thousand": "thousand",
-                    "decimalPoint": "comma",
-                    "negative": "negative"
-                },
-                "ordinal": {
-                    "1": "first",
-                    "2": "second",
-                    "3": "third",
-                    "5": "fifth",
-                    "12": "twelfth"
-                },
-                "fractions": {
-                    "halves": "halves"
-                },
-                "prefixes": {
-                    "units": {
-                        "formal": [ "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem" ],
-                        "informal": [ "un", "do", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem" ]
-                    },
-                    "tens": {
-                        "formal": [ "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin" ],
-                        "informal": [ "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin" ]
-                    },
-                    "hundreds": {
-                        "formal": [ "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen" ],
-                        "informal": [ "cen", "ducen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen" ]
-                    },
-                    "special": {
-                        "formal": [ "mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non" ],
-                        "informal": [ "mi", "bi", "tri", "quadri", "quin", "sex", "sept", "oct", "non" ]
-                    },
-                    "millia": "millia"
-                },
-                "suffixes": {
-                    "llion": "llion",
-                    "lliard": "lliard"
-                }
-            }
-        };
+    bigint = require('big-integer'),
+    reverse = require('reverse-string'),
+    ExponentNormalizer = require('@theoryofnekomata/normalize-exponential'),
+
+    Config = require('./config');
+
+/**
+ * Creates a custom instance of the converter.
+ * @param {Object} theConfig The configuration object.
+ * @constructor
+ */
+module.exports = function NumberName(theConfig) {
+    var config = new Config(theConfig);
 
     /**
-     * Constructor for a configuration object.
-     * @constructor
-     * @param {Object} config A configuration object.
-     * @returns {Object} The comprehensive configuration object.
+     * Gets the variant of the converter.
+     * @returns {String} The variant of the converter.
      */
-    function Config(config) {
-
-        /**
-         * Normalizes a system name.
-         * @param {String} systemAlias A system name, presumably an alias.
-         * @returns {String} The normalized system name.
-         */
-        function normalizeAlias(systemAlias) {
-            var normalizedAlias = '';
-
-            systemAlias = systemAlias.replace(/[^a-zA-Z]/g, '').toLowerCase();
-
-            Object.keys(systemAliases)
-                .forEach(function (normalizedSystemName) {
-                    if (normalizedSystemName.indexOf(systemAlias) < 0) {
-                        return;
-                    }
-                    normalizedAlias = normalizedSystemName;
-                });
-
-            if (normalizedAlias === '') {
-                throw new Error('Unknown system "' + systemAlias + '"');
-            }
-
-            return normalizedAlias;
-        }
-
-        config = config || {};
-        config.system = config.system || 'american';
-
-        if (typeof config.system === 'string') {
-            config.system = defaultSystems[ normalizeAlias(config.system) ];
-        }
-
-        return {
-            variant: config.variant || 'formal',
-            isShortMillia: config.isShortMillia === true,
-            system: config.system || defaultSystems.american,
-            fractionType: config.fractionType || 'digits',
-            dashes: config.dashes === true
-        };
+    function getVariant() {
+        return config.variant;
     }
 
     /**
-     * Creates a custom instance of the converter.
-     * @param {Object} theConfig The configuration object.
-     * @class
+     * Gets the flag if dashes are to be added between prefix fragments for readability.
+     * @returns {Boolean} Value that determines if dashes are to be added between prefixes.
      */
-    return function NumberName(theConfig) {
-        var config = new Config(theConfig);
+    function getHasDashes() {
+        return config.dashes;
+    }
 
-        /**
-         * Gets the variant of the converter.
-         * @returns {String} The variant of the converter.
-         */
-        function getVariant() {
-            return config.variant;
+    /**
+     * Gets the fraction type of the converter.
+     * @returns {String} The fraction type of the converter.
+     */
+    function getFractionType() {
+        return config.fractionType;
+    }
+
+    /**
+     * Gets the flag if millia- prefixes are to be shortened (e.g. milliamilliatillion => millia^2tillion)
+     * @returns {Boolean} Value that determines if millia- prefixes are to be shortened.
+     */
+    function getIsShortMillia() {
+        return config.isShortMillia;
+    }
+
+    /**
+     * Gets the long count type of the system (or null if the system is short count).
+     * @returns {String|null} The long count type of the system (or null if the system is short count.)
+     */
+    function getLongCount() {
+        return config.system.language.longCountType;
+    }
+
+    /**
+     * Gets the "zero" word of the system.
+     * @returns {String} The "zero" word of the system.
+     */
+    function getZeroWord() {
+        return config.system.base.zero;
+    }
+
+    /**
+     * Gets the unit word of the system for a specific digit.
+     * @param {Number} digit The unit digit.
+     * @returns {String} The word for the unit.
+     */
+    function getUnitsWord(digit) {
+        if (parseInt(digit) === 0) {
+            return getZeroWord();
+        }
+        return config.system.base.units[ digit - 1 ];
+    }
+
+    /**
+     * Gets the tens word of the system for a specific tens factor.
+     * @param {Number} factor The tens factor (10 * factor).
+     * @returns {String} The word for the ten.
+     */
+    function getTensWord(factor) {
+        return config.system.base.tens[ factor - 2 ];
+    }
+
+    /**
+     * Gets the -teen word of the system for a specific digit.
+     * @param {Number} offset The ten offset (10 + offset).
+     * @returns {String} The word for the -teen.
+     */
+    function getTeensWord(offset) {
+        return config.system.base.teens[ offset ];
+    }
+
+    /**
+     * Gets the "hundred" word of the system.
+     * @returns {String} The "hundred" word of the system.
+     */
+    function getHundredWord() {
+        return config.system.base.hundred;
+    }
+
+    /**
+     * Gets the "thousand" word of the system.
+     * @returns {String} The "thousand" word of the system.
+     */
+    function getThousandWord() {
+        return config.system.base.thousand;
+    }
+
+    /**
+     * Gets the -llion/-lliard suffix of the system for a certain Latin power.
+     * @param {Number} latinPower The Latin power.
+     * @returns {String} The suffix.
+     */
+    function getLlionLliard(latinPower) {
+        return (getLongCount() === 'european' && latinPower % 2 === 1) ?
+            config.system.suffixes.lliard : config.system.suffixes.llion;
+    }
+
+    /**
+     * Gets the special units prefix of the system for a certain Latin power.
+     * @param {Number} latinPower The Latin power.
+     * @returns {String} The prefix.
+     */
+    function getSpecialUnitsKiloPrefix(latinPower) {
+        return config.system.prefixes.special[ getVariant() ][ latinPower - 1 ];
+    }
+
+    /**
+     * Gets the standard units prefix of the system for a certain Latin power.
+     * @param {Number} latinPower The Latin power.
+     * @returns {String} The prefix.
+     */
+    function getUnitsKiloPrefix(latinPower) {
+        return config.system.prefixes.units[ getVariant() ][ latinPower - 1 ];
+    }
+
+    /**
+     * Gets the tens prefix of the system for a certain Latin power factor.
+     * @param {Number} latinPowerFactor The Latin power factor (10 * latinPowerFactor).
+     * @returns {String} The prefix.
+     */
+    function getTensKiloPrefix(latinPowerFactor) {
+        return config.system.prefixes.tens[ getVariant() ][ latinPowerFactor - 1 ];
+    }
+
+    /**
+     * Gets the hundreds prefix of the system for a certain Latin power factor.
+     * @param {Number} latinPowerFactor The Latin power factor (100 * latinPowerFactor).
+     * @returns {String} The prefix.
+     */
+    function getHundredsKiloPrefix(latinPowerFactor) {
+        return config.system.prefixes.hundreds[ getVariant() ][ latinPowerFactor - 1 ];
+    }
+
+    /**
+     * Gets the "millia" prefix of the system, which is used for naming Latin powers 1000 and beyond.
+     * @returns {String} The "millia" prefix.
+     */
+    function getMilliaPrefix() {
+        return config.system.prefixes.millia;
+    }
+
+    /**
+     * Gets the "negative" word of the system.
+     * @returns {String} The "negative" word.
+     */
+    function getNegativeWord() {
+        return config.system.base.negative;
+    }
+
+    /**
+     * Gets the decimal point symbol (i.e. '.' for US/UK, ',' for European).
+     * @returns {String} The decimal point symbol.
+     */
+    function getDecimalPointSymbol() {
+        return config.system.symbols.decimalPoint;
+    }
+
+    /**
+     * Gets the word for the decimal point symbol of the system.
+     * @returns {String} The word for the decimal point.
+     */
+    function getDecimalPointWord() {
+        return config.system.base.decimalPoint;
+    }
+
+    /**
+     * Gets the digit grouping symbol (i.e. ',' for US/UK, '.' for European).
+     * @returns {String} The digit grouping symbol.
+     */
+    function getDigitGroupingSymbol() {
+        return config.system.symbols.digitGrouping;
+    }
+
+    /**
+     * Gets the negative symbol (e.g. the minus '-' symbol).
+     * @returns {String} The negative symbol.
+     */
+    function getNegativeSymbol() {
+        return '-';
+    }
+
+    /**
+     * Gets the exponential delimiter symbol (e.g. the 'e' in "3.14e+25").
+     * @returns {String} The exponential delimiter symbol.
+     */
+    function getExponentSymbol() {
+        return 'e';
+    }
+
+    /**
+     * Splits a string into three characters each.
+     * @param {String} s A string.
+     * @returns {String[]} The string split in three characters.
+     */
+    function splitInThrees(s) {
+        return s.match(/.{1,3}/g);
+    }
+
+    /**
+     * Normalizes the Latin power to accomodate both long and short count systems.
+     * @returns {Number} power The base power.
+     * @returns {String} The normalized power.
+     */
+    function toLatinPower(power) {
+        return (getLongCount() !== null ? (power / 2) : (power - 1));
+    }
+
+    /**
+     * Gets the repeated millia- prefix.
+     * @returns {Number} milliaCount How many millia-'s?
+     * @returns {String} The repeated millia- prefixes.
+     */
+    function getMilliaRep(milliaCount) {
+        var i,
+            millias = [];
+
+        if (getIsShortMillia() && milliaCount > 0) {
+            return [ getMilliaPrefix() + (milliaCount > 1 ? '^' + milliaCount : '') ];
         }
 
-        /**
-         * Gets the flag if dashes are to be added between prefix fragments for readability.
-         * @returns {Boolean} Value that determines if dashes are to be added between prefixes.
-         */
-        function getHasDashes() {
-            return config.dashes;
+        for (i = milliaCount; i > 0; i--) {
+            millias.push(getMilliaPrefix());
         }
 
-        /**
-         * Gets the fraction type of the converter.
-         * @returns {String} The fraction type of the converter.
-         */
-        function getFractionType() {
-            return config.fractionType;
+        return millias;
+    }
+
+    /**
+     * Gets the kilo-kilo (the thousands of the Latin power).
+     * @param {Number} latinPowerKilo The Latin power for the kilo.
+     * @param {Number} milliaCount The number of 'millia's to be appended.
+     * @param {Number} kilos
+     * @returns {String} The fragment of the name of the Latin power kilo.
+     */
+    function getKiloKilo(latinPowerKilo, milliaCount, kilos) {
+        var kiloOnes = latinPowerKilo % TEN,
+            kiloTens = Math.floor(latinPowerKilo / TEN) % TEN,
+            kiloHundreds = Math.floor(latinPowerKilo / ONE_HUNDRED) % TEN,
+            lastKilo = kilos.length - 1,
+            prefixFragments = [];
+
+        if (kiloOnes > 0 && (
+                // No millias yet, add unit prefixes.
+                lastKilo === 0 ||
+
+                // Has millias, add unit prefixes for lower millias...
+                milliaCount < lastKilo ||
+                // ...and don't add for largest millia if unit power is 1 (safely say a milliatillion == unmilliatillion)
+                milliaCount === lastKilo && latinPowerKilo > 1
+            )) {
+            prefixFragments.unshift(
+                latinPowerKilo < TEN && milliaCount < 1 && lastKilo < 1 ?
+                    getSpecialUnitsKiloPrefix(kiloOnes) : getUnitsKiloPrefix(kiloOnes)
+            );
         }
 
-        /**
-         * Gets the flag if millia- prefixes are to be shortened (e.g. milliamilliatillion => millia^2tillion)
-         * @returns {Boolean} Value that determines if millia- prefixes are to be shortened.
-         */
-        function getIsShortMillia() {
-            return config.isShortMillia;
+        if (kiloTens > 0) {
+            prefixFragments.push(getTensKiloPrefix(kiloTens));
         }
 
-        /**
-         * Gets the long count type of the system (or null if the system is short count).
-         * @returns {String|null} The long count type of the system (or null if the system is short count.)
-         */
-        function getLongCount() {
-            return config.system.language.longCountType;
+        if (kiloHundreds > 0) {
+            prefixFragments.unshift(getHundredsKiloPrefix(kiloHundreds));
         }
 
-        /**
-         * Gets the "zero" word of the system.
-         * @returns {String} The "zero" word of the system.
-         */
-        function getZeroWord() {
-            return config.system.base.zero;
-        }
-
-        /**
-         * Gets the unit word of the system for a specific digit.
-         * @param {Number} digit The unit digit.
-         * @returns {String} The word for the unit.
-         */
-        function getUnitsWord(digit) {
-            if (parseInt(digit) === 0) {
-                return getZeroWord();
-            }
-            return config.system.base.units[ digit - 1 ];
-        }
-
-        /**
-         * Gets the tens word of the system for a specific tens factor.
-         * @param {Number} factor The tens factor (10 * factor).
-         * @returns {String} The word for the ten.
-         */
-        function getTensWord(factor) {
-            return config.system.base.tens[ factor - 2 ];
-        }
-
-        /**
-         * Gets the -teen word of the system for a specific digit.
-         * @param {Number} offset The ten offset (10 + offset).
-         * @returns {String} The word for the -teen.
-         */
-        function getTeensWord(offset) {
-            return config.system.base.teens[ offset ];
-        }
-
-        /**
-         * Gets the "hundred" word of the system.
-         * @returns {String} The "hundred" word of the system.
-         */
-        function getHundredWord() {
-            return config.system.base.hundred;
-        }
-
-        /**
-         * Gets the "thousand" word of the system.
-         * @returns {String} The "thousand" word of the system.
-         */
-        function getThousandWord() {
-            return config.system.base.thousand;
-        }
-
-        /**
-         * Gets the -llion/-lliard suffix of the system for a certain Latin power.
-         * @param {Number} latinPower The Latin power.
-         * @returns {String} The suffix.
-         */
-        function getLlionLliard(latinPower) {
-            return (getLongCount() === 'european' && latinPower % 2 === 1) ?
-                config.system.suffixes.lliard : config.system.suffixes.llion;
-        }
-
-        /**
-         * Gets the special units prefix of the system for a certain Latin power.
-         * @param {Number} latinPower The Latin power.
-         * @returns {String} The prefix.
-         */
-        function getSpecialUnitsKiloPrefix(latinPower) {
-            return config.system.prefixes.special[ getVariant() ][ latinPower - 1 ];
-        }
-
-        /**
-         * Gets the standard units prefix of the system for a certain Latin power.
-         * @param {Number} latinPower The Latin power.
-         * @returns {String} The prefix.
-         */
-        function getUnitsKiloPrefix(latinPower) {
-            return config.system.prefixes.units[ getVariant() ][ latinPower - 1 ];
-        }
-
-        /**
-         * Gets the tens prefix of the system for a certain Latin power factor.
-         * @param {Number} latinPowerFactor The Latin power factor (10 * latinPowerFactor).
-         * @returns {String} The prefix.
-         */
-        function getTensKiloPrefix(latinPowerFactor) {
-            return config.system.prefixes.tens[ getVariant() ][ latinPowerFactor - 1 ];
-        }
-
-        /**
-         * Gets the hundreds prefix of the system for a certain Latin power factor.
-         * @param {Number} latinPowerFactor The Latin power factor (100 * latinPowerFactor).
-         * @returns {String} The prefix.
-         */
-        function getHundredsKiloPrefix(latinPowerFactor) {
-            return config.system.prefixes.hundreds[ getVariant() ][ latinPowerFactor - 1 ];
-        }
-
-        /**
-         * Gets the "millia" prefix of the system, which is used for naming Latin powers 1000 and beyond.
-         * @returns {String} The "millia" prefix.
-         */
-        function getMilliaPrefix() {
-            return config.system.prefixes.millia;
-        }
-
-        /**
-         * Gets the "negative" word of the system.
-         * @returns {String} The "negative" word.
-         */
-        function getNegativeWord() {
-            return config.system.base.negative;
-        }
-
-        /**
-         * Gets the decimal point symbol (i.e. '.' for US/UK, ',' for European).
-         * @returns {String} The decimal point symbol.
-         */
-        function getDecimalPointSymbol() {
-            return config.system.symbols.decimalPoint;
-        }
-
-        /**
-         * Gets the word for the decimal point symbol of the system.
-         * @returns {String} The word for the decimal point.
-         */
-        function getDecimalPointWord() {
-            return config.system.base.decimalPoint;
-        }
-
-        /**
-         * Gets the digit grouping symbol (i.e. ',' for US/UK, '.' for European).
-         * @returns {String} The digit grouping symbol.
-         */
-        function getDigitGroupingSymbol() {
-            return config.system.symbols.digitGrouping;
-        }
-
-        /**
-         * Gets the negative symbol (e.g. the minus '-' symbol).
-         * @returns {String} The negative symbol.
-         */
-        function getNegativeSymbol() {
-            return '-';
-        }
-
-        /**
-         * Gets the exponential delimiter symbol (e.g. the 'e' in "3.14e+25").
-         * @returns {String} The exponential delimiter symbol.
-         */
-        function getExponentSymbol() {
-            return 'e';
-        }
-
-        /**
-         * Splits a string into three characters each.
-         * @param {String} s A string.
-         * @returns {String[]} The string split in three characters.
-         */
-        function splitInThrees(s) {
-            return s.match(/.{1,3}/g);
-        }
-
-        /**
-         * Normalizes the Latin power to accomodate both long and short count systems.
-         * @returns {Number} power The base power.
-         * @returns {String} The normalized power.
-         */
-        function toLatinPower(power) {
-            return (getLongCount() !== null ? (power / 2) : (power - 1));
-        }
-
-        /**
-         * Gets the repeated millia- prefix.
-         * @returns {Number} milliaCount How many millia-'s?
-         * @returns {String} The repeated millia- prefixes.
-         */
-        function getMilliaRep(milliaCount) {
-            var i,
-                millias = [];
-
-            if (getIsShortMillia() && milliaCount > 0) {
-                return [ getMilliaPrefix() + (milliaCount > 1 ? '^' + milliaCount : '') ];
-            }
-
-            for (i = milliaCount; i > 0; i--) {
-                millias.push(getMilliaPrefix());
-            }
-
-            return millias;
-        }
-
-        /**
-         * Gets the kilo-kilo (the thousands of the Latin power).
-         * @param {Number} latinPowerKilo The Latin power for the kilo.
-         * @param {Number} milliaCount The number of 'millia's to be appended.
-         * @param {Number} kilos
-         * @returns {String} The fragment of the name of the Latin power kilo.
-         */
-        function getKiloKilo(latinPowerKilo, milliaCount, kilos) {
-            var kiloOnes = latinPowerKilo % TEN,
-                kiloTens = Math.floor(latinPowerKilo / TEN) % TEN,
-                kiloHundreds = Math.floor(latinPowerKilo / ONE_HUNDRED) % TEN,
-                lastKilo = kilos.length - 1,
-                prefixFragments = [];
-
-            if (kiloOnes > 0 && (
-                    // No millias yet, add unit prefixes.
-                    lastKilo === 0 ||
-
-                    // Has millias, add unit prefixes for lower millias...
-                    milliaCount < lastKilo ||
-                    // ...and don't add for largest millia if unit power is 1 (safely say a milliatillion == unmilliatillion)
-                    milliaCount === lastKilo && latinPowerKilo > 1
-                )) {
-                prefixFragments.unshift(
-                    latinPowerKilo < TEN && milliaCount < 1 && lastKilo < 1 ?
-                        getSpecialUnitsKiloPrefix(kiloOnes) : getUnitsKiloPrefix(kiloOnes)
-                );
-            }
-
-            if (kiloTens > 0) {
-                prefixFragments.push(getTensKiloPrefix(kiloTens));
-            }
-
-            if (kiloHundreds > 0) {
-                prefixFragments.unshift(getHundredsKiloPrefix(kiloHundreds));
-            }
-
-            if (latinPowerKilo > 0) {
-                getMilliaRep(milliaCount)
-                    .forEach(function (milliaRep) {
-                        return prefixFragments.push(milliaRep);
-                    });
-            }
-
-            return prefixFragments.join(getHasDashes() ? '-' : '');
-        }
-
-        /**
-         * Gets the kilo prefix of the Latin power.
-         * @param {Number} latinPower The Latin power.
-         * @returns {String} The kilo prefix of the Latin power.
-         */
-        function getKiloPrefix(latinPower) {
-            return splitInThrees(reverse('' + Math.floor(latinPower)))
-                .map(function (kiloKilo) {
-                    return parseInt(reverse(kiloKilo));
-                })
-                .map(function (latinPowerKilo, milliaCount, kilos) {
-                    return getKiloKilo(latinPowerKilo, milliaCount, kilos);
-                })
-                .reverse()
-                .join(getHasDashes() ? '-' : '')
-                .trim();
-        }
-
-        /**
-         * Gets the infix between the Latin power prefix and the -llion/-lliard suffix.
-         * @param {Number} latinPower The Latin power.
-         * @returns {String|null} The infix, or null if it does not require an infix.
-         */
-        function getTillionIllion(latinPower) {
-            var powerKilo = latinPower % ONE_THOUSAND;
-
-            if (powerKilo < 5 && powerKilo > 0 && latinPower < ONE_THOUSAND) {
-                return null;
-            }
-            if (powerKilo >= 7 && powerKilo <= TEN || Math.floor(powerKilo / TEN) % TEN === 1) {
-                return 'i';
-            }
-            return 'ti';
-        }
-
-        /**
-         * Gets the kilo name of the power.
-         * @param {Number} power The base power.
-         * @returns {String} The kilo name.
-         */
-        function getKiloName(power) {
-            var latinPower,
-                kiloNameFragments;
-
-            if (power < 2) {
-                return power === 1 ? getThousandWord() : null;
-            }
-
-            latinPower = toLatinPower(power);
-
-            kiloNameFragments = [
-                getKiloPrefix(latinPower),
-                getTillionIllion(latinPower),
-                getLlionLliard(power)
-            ]
-                .filter(function (fragment) {
-                    return fragment !== null;
+        if (latinPowerKilo > 0) {
+            getMilliaRep(milliaCount)
+                .forEach(function (milliaRep) {
+                    return prefixFragments.push(milliaRep);
                 });
-
-            return (getLongCount() === 'british' && power % 2 === 1 ? getThousandWord() + ' ' : '') + kiloNameFragments.join(getHasDashes() ? '-' : '');
         }
 
-        /**
-         * Gets the name of the hundred.
-         * @param {Number} number The number < 1000.
-         * @returns {String} The name of the hundred.
-         */
-        function getHundredName(number) {
-            var hundreds = Math.floor(number / ONE_HUNDRED),
-                tens = Math.floor(number / TEN % TEN),
-                ones = Math.floor(number % TEN),
-                hundredNames = [];
+        return prefixFragments.join(getHasDashes() ? '-' : '');
+    }
 
-            if (hundreds > 0) {
-                hundredNames.push(getUnitsWord(hundreds));
-                hundredNames.push(getHundredWord());
-            }
+    /**
+     * Gets the kilo prefix of the Latin power.
+     * @param {Number} latinPower The Latin power.
+     * @returns {String} The kilo prefix of the Latin power.
+     */
+    function getKiloPrefix(latinPower) {
+        return splitInThrees(reverse('' + Math.floor(latinPower)))
+            .map(function (kiloKilo) {
+                return parseInt(reverse(kiloKilo));
+            })
+            .map(function (latinPowerKilo, milliaCount, kilos) {
+                return getKiloKilo(latinPowerKilo, milliaCount, kilos);
+            })
+            .reverse()
+            .join(getHasDashes() ? '-' : '')
+            .trim();
+    }
 
-            if (tens > 0) {
-                if (tens === 1) {
-                    hundredNames.push(getTeensWord(ones));
-                    return hundredNames.join(' ');
-                }
-                hundredNames.push(getTensWord(tens));
-            }
+    /**
+     * Gets the infix between the Latin power prefix and the -llion/-lliard suffix.
+     * @param {Number} latinPower The Latin power.
+     * @returns {String|null} The infix, or null if it does not require an infix.
+     */
+    function getTillionIllion(latinPower) {
+        var powerKilo = latinPower % ONE_THOUSAND;
 
-            if (ones > 0) {
-                hundredNames.push(getUnitsWord(ones));
-            }
+        if (powerKilo < 5 && powerKilo > 0 && latinPower < ONE_THOUSAND) {
+            return null;
+        }
+        if (powerKilo >= 7 && powerKilo <= TEN || Math.floor(powerKilo / TEN) % TEN === 1) {
+            return 'i';
+        }
+        return 'ti';
+    }
 
-            return hundredNames.join(' ');
+    /**
+     * Gets the kilo name of the power.
+     * @param {Number} power The base power.
+     * @returns {String} The kilo name.
+     */
+    function getKiloName(power) {
+        var latinPower,
+            kiloNameFragments;
+
+        if (power < 2) {
+            return power === 1 ? getThousandWord() : null;
         }
 
-        /**
-         * Gets the phrase of the kilo (i.e. "one million two hundred forty five", there are two phrases:
-         * "one million", and "two hundred forty five".
-         * @param {Number} kiloDigits The kilo
-         * @param {Number} power The power of the kilo.
-         * @param {Number[]} kilos All the kilos.
-         * @returns {String} The kilo phrase.
-         */
-        function getKiloPhrase(kiloDigits, power, kilos) {
-            var kiloString,
-                kiloName;
+        latinPower = toLatinPower(power);
 
-            if (kiloDigits === 0) {
-                if (kilos.length < 2 && power === 0) {
-                    return getZeroWord();
-                }
-                return null;
-            }
-
-            kiloString = getHundredName(kiloDigits);
-            kiloName = getKiloName(power);
-
-            if (kiloName === null) {
-                return kiloString;
-            }
-
-            return [ kiloString, kiloName ].join(' ');
-        }
-
-        /**
-         * Normalizes a number.
-         * @param {*} value A value.
-         * @returns {String} The normalized number.
-         */
-        function normalizeNumber(value) {
-            var normalize = new ExpNormalizer({
-                decimalPoint: getDecimalPointSymbol(),
-                exponentSymbol: getExponentSymbol()
+        kiloNameFragments = [
+            getKiloPrefix(latinPower),
+            getTillionIllion(latinPower),
+            getLlionLliard(power)
+        ]
+            .filter(function (fragment) {
+                return fragment !== null;
             });
 
-            if (typeof value === 'number') {
-                value = value.toExponential().toLowerCase();
-            }
+        return (getLongCount() === 'british' && power % 2 === 1 ? getThousandWord() + ' ' : '') + kiloNameFragments.join(getHasDashes() ? '-' : '');
+    }
 
-            return normalize(value);
+    /**
+     * Gets the name of the hundred.
+     * @param {Number} number The number < 1000.
+     * @returns {String} The name of the hundred.
+     */
+    function getHundredName(number) {
+        var hundreds = Math.floor(number / ONE_HUNDRED),
+            tens = Math.floor(number / TEN % TEN),
+            ones = Math.floor(number % TEN),
+            hundredNames = [];
+
+        if (hundreds > 0) {
+            hundredNames.push(getUnitsWord(hundreds));
+            hundredNames.push(getHundredWord());
         }
 
-        /**
-         * Checks if a string is composed of only zeroes.
-         * @param {String} string A string.
-         * @returns {Boolean} Is string composed of only zeroes?
-         */
-        function isAllZeroes(string) {
-            var i;
+        if (tens > 0) {
+            if (tens === 1) {
+                hundredNames.push(getTeensWord(ones));
+                return hundredNames.join(' ');
+            }
+            hundredNames.push(getTensWord(tens));
+        }
 
-            for (i = 0; i < string.length; i++) {
-                if (string[ i ] !== '0') {
-                    return false;
+        if (ones > 0) {
+            hundredNames.push(getUnitsWord(ones));
+        }
+
+        return hundredNames.join(' ');
+    }
+
+    /**
+     * Gets the phrase of the kilo (i.e. "one million two hundred forty five", there are two phrases:
+     * "one million", and "two hundred forty five".
+     * @param {Number} kiloDigits The kilo
+     * @param {Number} power The power of the kilo.
+     * @param {Number[]} kilos All the kilos.
+     * @returns {String} The kilo phrase.
+     */
+    function getKiloPhrase(kiloDigits, power, kilos) {
+        var kiloString,
+            kiloName;
+
+        if (kiloDigits === 0) {
+            if (kilos.length < 2 && power === 0) {
+                return getZeroWord();
+            }
+            return null;
+        }
+
+        kiloString = getHundredName(kiloDigits);
+        kiloName = getKiloName(power);
+
+        if (kiloName === null) {
+            return kiloString;
+        }
+
+        return [ kiloString, kiloName ].join(' ');
+    }
+
+    /**
+     * Normalizes a number.
+     * @param {*} value A value.
+     * @returns {String} The normalized number.
+     */
+    function normalizeNumber(value) {
+        var normalizer = new ExponentNormalizer({
+            decimalPoint: getDecimalPointSymbol(),
+            exponentSymbol: getExponentSymbol()
+        });
+
+        if (typeof value === 'number') {
+            value = value.toExponential().toLowerCase();
+        }
+
+        return normalizer.normalize(value);
+    }
+
+    /**
+     * Checks if a string is composed of only zeroes.
+     * @param {String} string A string.
+     * @returns {Boolean} Is string composed of only zeroes?
+     */
+    function isAllZeroes(string) {
+        var i;
+
+        for (i = 0; i < string.length; i++) {
+            if (string[ i ] !== '0') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Converts a number-like string represented in exponential notation to its standard notation.
+     * @param {String} number A number-like string.
+     * @returns {String} The same number in standard notation.
+     */
+    function exponentialToFloat(number) {
+        var decPoint = getDecimalPointSymbol(),
+            negSymbol = getNegativeSymbol(),
+            expDelimiter = getExponentSymbol(),
+
+            decPointIdx = number.indexOf(decPoint),
+            realDecPointIdx = decPointIdx < 0 ? number.length : decPointIdx,
+            digitsExp = number.slice(0, realDecPointIdx) + number.slice(realDecPointIdx + decPoint.length),
+
+            expIndex = digitsExp.indexOf(expDelimiter),
+            realExpIndex = expIndex < 0 ? digitsExp.length : expIndex,
+            exp = parseInt(digitsExp.slice(realExpIndex + expDelimiter.length)),
+
+            isNegative = number.indexOf(negSymbol) === 0,
+
+            digits = digitsExp.slice(0, realExpIndex),
+
+            integerPart = '',
+            fractionalPart = '',
+            i;
+
+        if (isNegative) {
+            // Treat it as a positive number, then add the negative symbol afterwards.
+            digits = digits.slice(negSymbol.length);
+        }
+
+        if (exp < 0) {
+            // Save the zeroes in fractional numbers (e.g. 0.03, 0.000084, 0.0005)
+            for (i = 0; i <= -exp - 2; i++) {
+                digits = '0' + digits;
+            }
+        }
+
+        for (i = 0; i < digits.length; i++, exp--) {
+            if (exp >= 0) {
+                integerPart += digits[ i ];
+                continue;
+            }
+            fractionalPart += digits[ i ] || '0';
+        }
+
+        for (; exp >= 0; exp--) {
+            integerPart += '0';
+        }
+
+        // If there are no integer/fractional parts, just consider them as zeroes.
+        if (integerPart === '') {
+            integerPart = '0';
+        }
+
+        if (fractionalPart === '') {
+            fractionalPart = '0';
+        }
+
+        // Trim the leading zeroes in the integer part...
+        integerPart = integerPart.replace(/^0+/g, '');
+
+        // ...and the trailing zeroes in the fractional part.
+        fractionalPart = fractionalPart.replace(/0+$/g, '');
+
+        return (isNegative ? '-' : '') + integerPart + decPoint + fractionalPart;
+    }
+
+    /**
+     * Get the integer part of a number.
+     * @param {String} number A number.
+     * @returns {String} The integer part of the number.
+     */
+    function getIntegerPart(number) {
+        var decPoint = getDecimalPointSymbol(),
+            decPointIdx = number.indexOf(decPoint);
+
+        return number.slice(0, decPointIdx);
+    }
+
+    /**
+     * Gets the fractional part of a number.
+     * @param {String} number A number.
+     * @returns {String} The fractional part of the number including its leading zeroes if any.
+     */
+    function getFractionalPart(number) {
+        var decPoint = getDecimalPointSymbol(),
+            decPointIdx = number.indexOf(decPoint),
+            fractionalPart = number.slice(decPointIdx + decPoint.length);
+
+        if (isAllZeroes(fractionalPart)) {
+            return null;
+        }
+
+        return fractionalPart;
+    }
+
+    /**
+     * Gets the name of the fractional part of a number.
+     * @param {String} fractionalPart The fractional part of the number.
+     * @returns {String} The name of the fractional part of the number.
+     */
+    function getFractionName(fractionalPart) {
+        var i,
+            nameFragments = [];
+
+        switch (getFractionType()) {
+            case 'digits':
+                nameFragments.unshift(getDecimalPointWord());
+
+                for (i = 0; i < fractionalPart.length; i++) {
+                    nameFragments.push(getUnitsWord(fractionalPart[ i ]));
                 }
-            }
-
-            return true;
+                break;
+            default:
+                break;
         }
 
-        /**
-         * Converts a number-like string represented in exponential notation to its standard notation.
-         * @param {String} number A number-like string.
-         * @returns {String} The same number in standard notation.
-         */
-        function exponentialToFloat(number) {
-            var decPoint = getDecimalPointSymbol(),
-                negSymbol = getNegativeSymbol(),
-                expDelimiter = getExponentSymbol(),
+        return nameFragments.join(' ');
+    }
 
-                decPointIdx = number.indexOf(decPoint),
-                realDecPointIdx = decPointIdx < 0 ? number.length : decPointIdx,
-                digitsExp = number.slice(0, realDecPointIdx) + number.slice(realDecPointIdx + decPoint.length),
+    /**
+     * Removes the digit grouping symbol of a number.
+     * @param {String} number A number with digit grouping symbols.
+     * @returns {String} The same number without digit grouping symbols.
+     */
+    function degroupNumber(number) {
+        var digitGroupingSymbol = getDigitGroupingSymbol(),
+            digitGroupingSymbolIdx;
 
-                expIndex = digitsExp.indexOf(expDelimiter),
-                realExpIndex = expIndex < 0 ? digitsExp.length : expIndex,
-                exp = parseInt(digitsExp.slice(realExpIndex + expDelimiter.length)),
-
-                isNegative = number.indexOf(negSymbol) === 0,
-
-                digits = digitsExp.slice(0, realExpIndex),
-
-                integerPart = '',
-                fractionalPart = '',
-                i;
-
-            if (isNegative) {
-                // Treat it as a positive number, then add the negative symbol afterwards.
-                digits = digits.slice(negSymbol.length);
-            }
-
-            if (exp < 0) {
-                // Save the zeroes in fractional numbers (e.g. 0.03, 0.000084, 0.0005)
-                for (i = 0; i <= -exp - 2; i++) {
-                    digits = '0' + digits;
-                }
-            }
-
-            for (i = 0; i < digits.length; i++, exp--) {
-                if (exp >= 0) {
-                    integerPart += digits[ i ];
-                    continue;
-                }
-                fractionalPart += digits[ i ] || '0';
-            }
-
-            for (; exp >= 0; exp--) {
-                integerPart += '0';
-            }
-
-            // If there are no integer/fractional parts, just consider them as zeroes.
-            if (integerPart === '') {
-                integerPart = '0';
-            }
-
-            if (fractionalPart === '') {
-                fractionalPart = '0';
-            }
-
-            // Trim the leading zeroes in the integer part...
-            integerPart = integerPart.replace(/^0+/g, '');
-
-            // ...and the trailing zeroes in the fractional part.
-            fractionalPart = fractionalPart.replace(/0+$/g, '');
-
-            return (isNegative ? '-' : '') + integerPart + decPoint + fractionalPart;
+        while ((digitGroupingSymbolIdx = number.lastIndexOf(digitGroupingSymbol)) > -1) {
+            number = number.slice(0, digitGroupingSymbolIdx) + number.slice(digitGroupingSymbolIdx + digitGroupingSymbol.length);
         }
 
-        /**
-         * Get the integer part of a number.
-         * @param {String} number A number.
-         * @returns {String} The integer part of the number.
-         */
-        function getIntegerPart(number) {
-            var decPoint = getDecimalPointSymbol(),
-                decPointIdx = number.indexOf(decPoint);
+        return number;
+    }
 
-            return number.slice(0, decPointIdx);
+    /**
+     * Extracts digits from an integer
+     * @param {String} integerStr The integer in string.
+     * @returns {String} The digits.
+     */
+    function extractIntegralDigits(integerStr) {
+        var decimalPointSymbol = getDecimalPointSymbol(),
+            decimalPointSymbolIdx;
+
+        while ((decimalPointSymbolIdx = integerStr.lastIndexOf(decimalPointSymbol)) > -1) {
+            integerStr = integerStr.slice(0, decimalPointSymbolIdx) + integerStr.slice(decimalPointSymbolIdx + decimalPointSymbol.length);
         }
 
-        /**
-         * Gets the fractional part of a number.
-         * @param {String} number A number.
-         * @returns {String} The fractional part of the number including its leading zeroes if any.
-         */
-        function getFractionalPart(number) {
-            var decPoint = getDecimalPointSymbol(),
-                decPointIdx = number.indexOf(decPoint),
-                fractionalPart = number.slice(decPointIdx + decPoint.length);
+        return degroupNumber(integerStr).replace(getNegativeSymbol(), '').replace(/0+$/, '');
+    }
 
-            if (isAllZeroes(fractionalPart)) {
-                return null;
-            }
+    /**
+     * Pads the digits so as the length to arrive at the nearest multiple of 3.
+     * @param {String} digits The digits.
+     * @param {Number} exponentMagnitude The exponent magnitude for reference.
+     * @returns {String} The padded digits.
+     */
+    function padKiloDigits(digits, exponentMagnitude) {
+        var paddedDigits = digits,
+            zeroesToLeft = (5 - (exponentMagnitude % 3)) % 3,
+            i;
 
-            return fractionalPart;
+        for (i = 1; i <= zeroesToLeft; i++) {
+            (function () {
+                paddedDigits = '0' + paddedDigits;
+            })();
         }
 
-        /**
-         * Gets the name of the fractional part of a number.
-         * @param {String} fractionalPart The fractional part of the number.
-         * @returns {String} The name of the fractional part of the number.
-         */
-        function getFractionName(fractionalPart) {
-            var i,
-                nameFragments = [];
-
-            switch (getFractionType()) {
-                case 'digits':
-                    nameFragments.unshift(getDecimalPointWord());
-
-                    for (i = 0; i < fractionalPart.length; i++) {
-                        nameFragments.push(getUnitsWord(fractionalPart[ i ]));
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            return nameFragments.join(' ');
+        while (paddedDigits.length % 3 !== 0) {
+            paddedDigits += '0';
         }
 
-        /**
-         * Removes the digit grouping symbol of a number.
-         * @param {String} number A number with digit grouping symbols.
-         * @returns {String} The same number without digit grouping symbols.
-         */
-        function degroupNumber(number) {
-            var digitGroupingSymbol = getDigitGroupingSymbol(),
-                digitGroupingSymbolIdx;
+        return paddedDigits + '000';
+    }
 
-            while ((digitGroupingSymbolIdx = number.lastIndexOf(digitGroupingSymbol)) > -1) {
-                number = number.slice(0, digitGroupingSymbolIdx) + number.slice(digitGroupingSymbolIdx + digitGroupingSymbol.length);
-            }
-
-            return number;
-        }
-
-        function extractIntegralDigits(number) {
-            var decimalPointSymbol = getDecimalPointSymbol(),
-                decimalPointSymbolIdx;
-
-            while ((decimalPointSymbolIdx = number.lastIndexOf(decimalPointSymbol)) > -1) {
-                number = number.slice(0, decimalPointSymbolIdx) + number.slice(decimalPointSymbolIdx + decimalPointSymbol.length);
-            }
-
-            return degroupNumber(number).replace(getNegativeSymbol(), '').replace(/0+$/, '');
-        }
-
-        function padKiloDigits(digits, exponentMagnitude) {
-            var paddedDigits = digits,
-                zeroesToLeft = (5 - (exponentMagnitude % 3)) % 3,
-                i;
-
-            for (i = 1; i <= zeroesToLeft; i++) {
-                (function () {
-                    paddedDigits = '0' + paddedDigits;
-                })();
-            }
-
-            while (paddedDigits.length % 3 !== 0) {
-                paddedDigits += '0';
-            }
-
-            return paddedDigits + '000';
-        }
-
-        function toNameLarger(normalizedNumber, exponentMagnitude) {
-            var digits = extractIntegralDigits(normalizedNumber.match(/(.+?)[Ee]/)[1]),
-                paddedNumber = padKiloDigits(digits, exponentMagnitude),
-                maxKilo = Math.floor(exponentMagnitude / 3),
-                minKilo = maxKilo - Math.floor(paddedNumber.length / 3) + 1,
-                integralName = splitInThrees(reverse(paddedNumber))
-                    .map(function (kilos) {
-                        return parseInt(reverse(kilos));
-                    })
-                    .map(function (kiloDigits, kilo, kilos) {
-                        return getKiloPhrase(kiloDigits, kilo + minKilo, kilos);
-                    })
-                    .reverse()
-                    .filter(function (kilo) {
-                        return kilo !== null;
-                    })
-                    .join(' ')
-                    .trim(),
-                nameFragments = [ integralName ];
-
-            if (normalizedNumber.indexOf('-') === 0) {
-                nameFragments.unshift(getNegativeWord());
-            }
-
-            return nameFragments.join(' ').replace(/--+/g, '-').trim();
-        }
-
-        function toNameSmaller(normalizedNumber) {
-            var fraction,
-                integerPart,
-                fractionalPart,
-                bigNumber,
-                integralName,
-                nameFragments;
-
-            fraction = exponentialToFloat(normalizedNumber);
-            integerPart = getIntegerPart(fraction);
-            fractionalPart = getFractionalPart(fraction);
-            bigNumber = bigint(integerPart);
-            integralName = splitInThrees(reverse(bigNumber.abs().toString()))
+    /**
+     * Converts a larger number to its name.
+     * @param {String} normalizedNumber The normalized number.
+     * @param {Number} exponentMagnitude The exponent magnitude.
+     * @returns {String} The name of the number.
+     */
+    function toNameLarger(normalizedNumber, exponentMagnitude) {
+        var digits = extractIntegralDigits(normalizedNumber.match(/(.+?)[Ee]/)[ 1 ]),
+            paddedNumber = padKiloDigits(digits, exponentMagnitude),
+            maxKilo = Math.floor(exponentMagnitude / 3),
+            minKilo = maxKilo - Math.floor(paddedNumber.length / 3) + 1,
+            integralName = splitInThrees(reverse(paddedNumber))
                 .map(function (kilos) {
                     return parseInt(reverse(kilos));
                 })
                 .map(function (kiloDigits, kilo, kilos) {
-                    return getKiloPhrase(kiloDigits, kilo, kilos, 0);
+                    return getKiloPhrase(kiloDigits, kilo + minKilo, kilos);
                 })
                 .reverse()
                 .filter(function (kilo) {
                     return kilo !== null;
                 })
                 .join(' ')
-                .trim();
+                .trim(),
             nameFragments = [ integralName ];
 
-            if (normalizedNumber.indexOf('-') === 0) {
-                nameFragments.unshift(getNegativeWord());
-            }
-
-            if (fractionalPart !== null) {
-                nameFragments.push(getFractionName(fractionalPart));
-            }
-
-            return nameFragments.join(' ').replace(/--+/g, '-').trim();
+        if (normalizedNumber.indexOf('-') === 0) {
+            nameFragments.unshift(getNegativeWord());
         }
 
-        /**
-         * Converts a number to a name.
-         * @param {String|Number} number A number.
-         * @returns {String} The name of the number.
-         */
-        this.toName = function toName(number) {
-            var degroupedNumber,
-                normalizedNumber,
-                exponentMagnitude;
+        return nameFragments.join(' ').replace(/--+/g, '-').trim();
+    }
 
-            number = '' + number;
-            number = number.replace(/\s/g, '');
-            degroupedNumber = degroupNumber('' + number);
-            normalizedNumber = normalizeNumber(degroupedNumber);
+    /**
+     * Converts a smaller number to its name.
+     * @param {String} normalizedNumber The normalized number.
+     * @returns {String} The name of the number.
+     */
+    function toNameSmaller(normalizedNumber) {
+        var fraction,
+            integerPart,
+            fractionalPart,
+            bigNumber,
+            integralName,
+            nameFragments;
 
-            if (!/[+\-]?[0-9.][Ee][+\-][0-9]/.test(normalizedNumber)) {
-                throw new Error('Invalid number: "' + number + '"');
-            }
+        fraction = exponentialToFloat(normalizedNumber);
+        integerPart = getIntegerPart(fraction);
+        fractionalPart = getFractionalPart(fraction);
+        bigNumber = bigint(integerPart);
+        integralName = splitInThrees(reverse(bigNumber.abs().toString()))
+            .map(function (kilos) {
+                return parseInt(reverse(kilos));
+            })
+            .map(function (kiloDigits, kilo, kilos) {
+                return getKiloPhrase(kiloDigits, kilo, kilos, 0);
+            })
+            .reverse()
+            .filter(function (kilo) {
+                return kilo !== null;
+            })
+            .join(' ')
+            .trim();
+        nameFragments = [ integralName ];
 
-            exponentMagnitude = parseInt(normalizedNumber.match(/[Ee]([+\-]?.+)$/)[1]);
+        if (normalizedNumber.indexOf('-') === 0) {
+            nameFragments.unshift(getNegativeWord());
+        }
 
-            if (Math.abs(exponentMagnitude) >= LARGE_NUMBER_EXP_MAGNITUDE_THRESHOLD) {
-                return toNameLarger(normalizedNumber, exponentMagnitude);
-            }
+        if (fractionalPart !== null) {
+            nameFragments.push(getFractionName(fractionalPart));
+        }
 
-            return toNameSmaller(normalizedNumber);
-        };
+        return nameFragments.join(' ').replace(/--+/g, '-').trim();
+    }
 
-        this.getDigitGroupingSymbol = getDigitGroupingSymbol;
+    /**
+     * Converts a number to a name.
+     * @param {String|Number} number A number.
+     * @returns {String} The name of the number.
+     */
+    this.toName = function toName(number) {
+        var degroupedNumber,
+            normalizedNumber,
+            exponentMagnitude;
 
-        this.getDecimalPointSymbol = getDecimalPointSymbol;
+        number = '' + number;
+        number = number.replace(/\s/g, '');
+        degroupedNumber = degroupNumber('' + number);
+        normalizedNumber = normalizeNumber(degroupedNumber);
+
+        if (!/[+\-]?[0-9.][Ee][+\-][0-9]/.test(normalizedNumber)) {
+            throw new Error('Invalid number: "' + number + '"');
+        }
+
+        exponentMagnitude = parseInt(normalizedNumber.match(/[Ee]([+\-]?.+)$/)[ 1 ]);
+
+        if (Math.abs(exponentMagnitude) >= LARGE_NUMBER_EXP_MAGNITUDE_THRESHOLD) {
+            return toNameLarger(normalizedNumber, exponentMagnitude);
+        }
+
+        return toNameSmaller(normalizedNumber);
     };
-});
+
+    /**
+     * Gets the digit grouping symbol of the current system.
+     * @type {getDigitGroupingSymbol}
+     */
+    this.getDigitGroupingSymbol = getDigitGroupingSymbol;
+
+    /**
+     * Gets the decimal point symbol of the current system.
+     * @type {getDecimalPointSymbol}
+     */
+    this.getDecimalPointSymbol = getDecimalPointSymbol;
+};
