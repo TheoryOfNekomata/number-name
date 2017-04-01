@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-PH">
+<head>
+  <meta charset="UTF-8">
+  <title>number-name &mdash; Browser Test</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<form id="form">
+  <fieldset>
+    <legend>Input</legend>
+    <div class="field">
+      <label for="input">Input</label>
+      <textarea class="input" name="input" id="input"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="system">System</label>
+      <select class="system" name="system" id="system">
+        <option selected value="american">American/Modern British</option>
+        <option value="british">Traditional British</option>
+        <option value="european">European</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="variant">Variant</label>
+      <select class="variant" name="variant" id="variant">
+        <option selected value="formal">Formal</option>
+        <option value="informal">Informal</option>
+      </select>
+    </div>
+
+    <div class="field -button">
+      <button type="submit">Submit</button>
+    </div>
+  </fieldset><fieldset>
+    <legend>Output</legend>
+    <div>
+      <output class="output" name="output" id="output"></output>
+    </div>
+
+    <div>
+      <output class="error" name="error" id="error"></output>
+    </div>
+  </fieldset>
+</form>
+
+<script src="./../bin/number-name.min.js"></script>
+<script>
+    function NumberNameForm(element) {
+        element.addEventListener('submit', function (e) {
+            var input = element.querySelector('.input'),
+                system = element.querySelector('.system'),
+                variant = element.querySelector('.variant'),
+                output = element.querySelector('.output'),
+                errorOutput = element.querySelector('.error');
+
+            e.preventDefault();
+
+            try {
+                output.innerText = new NumberName({ system: system.value, variant: variant.value })
+                    .toName(input.value);
+                errorOutput.innerText = '';
+            } catch (e) {
+                output.innerText = '';
+                errorOutput.innerText = e.message;
+            }
+        });
+    }
+
+    new NumberNameForm(document.getElementById('form'));
+</script>
+</body>
+</html>

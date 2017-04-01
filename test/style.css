@@ -1,0 +1,88 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: sans-serif;
+  color: #666;
+}
+
+head {
+  display: block !important;
+}
+
+title {
+  display: block !important;
+  font-size: 2em;
+  margin: 64px;
+  color: #000;
+}
+
+body {
+  margin: 64px;
+}
+
+form {
+  margin: 0 -64px;
+}
+
+fieldset {
+  margin-bottom: 1em;
+  padding: 0 64px;
+}
+
+.field {
+  margin-bottom: 1em;
+}
+
+legend {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+  color: #000;
+}
+
+label, input, select, textarea, output {
+  display: block;
+  width: 100%;
+}
+
+textarea, output {
+  resize: vertical;
+}
+
+input, select, textarea, output:not(:empty) {
+  border: 1px solid;
+  padding: 8px;
+
+  background: inherit;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+
+input[type="reset"], input[type="submit"], button {
+  border: 1px solid;
+  padding: 8px 16px;
+
+  line-height: inherit;
+  background: inherit;
+  color: inherit;
+  font: inherit;
+  border-radius: 4px;
+}
+
+.field.-button {
+  text-align: right;
+}
+
+.error {
+  color: #f00 !important;
+}
+
+@media (min-width: 768px) {
+  fieldset {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+  }
+}

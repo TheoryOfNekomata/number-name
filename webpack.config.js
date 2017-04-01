@@ -13,12 +13,16 @@ module.exports = [
         entry: './index.js',
         output: {
             path: path.resolve(__dirname, 'bin'),
-            filename: 'number-name.js'
+            filename: 'number-name.js',
+            library: 'NumberName',
+            libraryTarget: 'umd',
+            umdNamedDefine: true
         },
         resolve: {
             modules: ['node_modules'],
             extensions: ['.js', '.json']
         },
+        devtool: 'source-map',
         module: {
             rules: [
                 {
@@ -33,7 +37,10 @@ module.exports = [
         entry: './index.js',
         output: {
             path: path.resolve(__dirname, 'bin'),
-            filename: 'number-name.min.js'
+            filename: 'number-name.min.js',
+            library: 'NumberName',
+            libraryTarget: 'umd',
+            umdNamedDefine: true
         },
         resolve: {
             modules: ['node_modules'],
@@ -47,6 +54,7 @@ module.exports = [
                 }
             ]
         },
+        devtool: 'source-map',
         plugins: [
             new webpack.optimize.UglifyJsPlugin()
         ]
