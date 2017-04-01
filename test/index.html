@@ -38,6 +38,15 @@
     </div>
 
     <div class="field">
+      <label for="fraction-type">Fraction Type</label>
+      <select class="fractiontype" name="fraction_type" id="fraction-type">
+        <option selected value="digits">Digits</option>
+        <option disabled value="ratio">Ratio</option>
+        <option disabled value="part">Part</option>
+      </select>
+    </div>
+
+    <div class="field">
       <label for="variant">Variant</label>
       <select class="variant" name="variant" id="variant">
         <option selected value="formal">Formal</option>
@@ -67,13 +76,18 @@
             var input = element.querySelector('.input'),
                 system = element.querySelector('.system'),
                 variant = element.querySelector('.variant'),
+                fractionType = element.querySelector('.fractiontype'),
                 output = element.querySelector('.output'),
                 errorOutput = element.querySelector('.error');
 
             e.preventDefault();
 
             try {
-                output.innerText = new NumberName({ system: system.value, variant: variant.value })
+                if (input.value === null || typeof input.value === 'number' && isNaN(input.value) || typeof input.value !== 'string' && typeof input.value !== 'number') {
+                    throw new Error('Invalid input');
+                }
+
+                output.innerText = new NumberName({ fractionType: fractionType.value, system: system.value, variant: variant.value })
                     .toName(input.value);
                 errorOutput.innerText = '';
             } catch (e) {
