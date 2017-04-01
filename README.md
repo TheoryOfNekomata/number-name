@@ -29,16 +29,18 @@ The procedures for installing `number-name` are:
 ## Usage
 
 ```javascript
-    var NumberName = require('@theoryofnekomata/number-name'),
-   
-    // see https://github.com/Temoto-kun/number-name/tree/master/src/lang for systems
-    converter = new NumberName({ system: systemObj, fractionType: 'lazy' });
+var NumberName = require('@theoryofnekomata/number-name'),
 
-    var smallerNumber = -6.9e-42; // Number is OK. Can convert negative numbers just fine.
-    var largeNumber = '5.0e+303'; // note this is too large for a normal Number, so it is represented as string
-    var name1 = numberName(smallerNumber); // returns the long fractional name with "...six nine" in the end
-    var name2 = numberName(largeNumber); // returns "five centillion"
+// see https://github.com/Temoto-kun/number-name/tree/master/src/lang for systems
+converter = new NumberName({ system: systemObj, fractionType: 'lazy' });
+
+var smallerNumber = -6.9e-42; // Number is OK. Can convert negative numbers just fine.
+var largeNumber = '5.0e+303'; // note this is too large for a normal Number, so it is represented as string
+var name1 = numberName(smallerNumber); // returns the long fractional name with "...six nine" in the end
+var name2 = numberName(largeNumber); // returns "five centillion"
 ```
+
+It also works in the browser via `<script>` tags.
 
 ## Notes
 
