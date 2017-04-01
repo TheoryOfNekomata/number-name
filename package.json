@@ -18,6 +18,7 @@
     "webpack": "^2.3.2"
   },
   "scripts": {
+    "build": "webpack",
     "test": "eslint --env jasmine,es6,node spec/**/*.js && node test.js",
     "lint": "eslint --env es6,node src/**/*.js"
   },

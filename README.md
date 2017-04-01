@@ -11,9 +11,20 @@ his [Perl script](http://www.isthe.com/chongo/tech/math/number/number) into Java
 
 ## Installation
 
-Via NPM:
+`number-name` requires [Node.js](https://nodejs.org), tested with at least **v.5**. It should work with relatively
+earlier versions of Node.js (at least v.4). If you find bugs from v.4, kindly create an issue specifying whatever
+error message you are getting, and the code snippet of your code using `number-name` (or you may submit PRs of your
+fixes, see Contribution below).
+
+The procedures for installing `number-name` are:
+
+1. Install via NPM:
 
     $ npm install --save @theoryofnekomata/number-name
+
+2. Run `npm install`
+3. Run `npm run build`
+
 
 ## Usage
 
