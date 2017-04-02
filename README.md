@@ -20,7 +20,9 @@ The procedures for installing `number-name` are:
 
 1. Install via NPM:
 
-    $ npm install --save @theoryofnekomata/number-name
+```
+$ npm install --save @theoryofnekomata/number-name
+```
 
 2. Run `npm install`
 3. Run `npm run build`
@@ -48,11 +50,10 @@ It also works in the browser via `<script>` tags.
 - `Number`s
 - number-like strings
 
-It can convert numbers as high as `1.0e+3006003`. Optimization for much larger numbers is in progress.
-
 ## TODO
 
 - [ ] Fully localizable number systems (e.g. custom rules for combining fragments of number words)
+- [ ] Optimizations for fractions.
 - [ ] Implement other `fractionType`s, (only `lazy` (digits) is supported as of 0.2.0, e.g. `0.05` => `zero point zero five`,
       will implement `ratio` (`zero and five over one hundred`) and `part` (`zero and five hundredths`))
 - [ ] Upon adding more features, update the unit tests as well.
