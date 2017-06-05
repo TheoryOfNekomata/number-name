@@ -1,5 +1,4 @@
 {
-  "extends": "@theoryofnekomata/eslint-config-theoryofnekomata",
   "env": {
     "jasmine": true
   }
