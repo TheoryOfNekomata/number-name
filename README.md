@@ -2,6 +2,8 @@
 
 Converts a number into its name.
 
+[See the demo here.](https://Temoto-kun.github.io/number-name)
+
 ## Why?
 
 Inspired by [number-to-words](https://www.npmjs.com/package/number-to-words). Thinking I could improve on the code to include
@@ -38,8 +40,8 @@ converter = new NumberName({ system: systemObj, fractionType: 'lazy' });
 
 var smallerNumber = -6.9e-42; // Number is OK. Can convert negative numbers just fine.
 var largeNumber = '5.0e+303'; // note this is too large for a normal Number, so it is represented as string
-var name1 = numberName(smallerNumber); // returns the long fractional name with "...six nine" in the end
-var name2 = numberName(largeNumber); // returns "five centillion"
+var name1 = converter.toName(smallerNumber); // returns the long fractional name with "...six nine" in the end
+var name2 = converter.toName(largeNumber); // returns "five centillion"
 ```
 
 It also works in the browser via `<script>` tags.
