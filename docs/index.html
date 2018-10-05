@@ -71,29 +71,7 @@
 <output>&nbsp;</output>
 
 <script src="number-name.min.js"></script>
-<script>
-  (function () {
-    const converter = new window.NumberName()
-
-    const [input, ] = window.document.getElementsByTagName('input')
-    const [output, ] = window.document.getElementsByTagName('output')
-
-    console.log(converter)
-
-    input.addEventListener('input', (e) => {
-      let numberName
-      try {
-        if (e.target.value.trim().length < 1) {
-          throw new Error()
-        }
-        numberName = converter.toName(e.target.value)
-      } catch (e) {
-        numberName = '\xA0'
-      }
-      output.innerText = numberName
-    })
-  })()
-</script>
+<script src="index.js"></script>
 
 </body>
 </html>
